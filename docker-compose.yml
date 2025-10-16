@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: bta-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: bta_dashboard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bta-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: bta-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - bta-network
+
+volumes:
+  postgres_data:
+
+networks:
+  bta-network:
+    driver: bridge
