@@ -1,6 +1,40 @@
-version: '3.8'
-
 services:
+  app:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: bta-app
+    restart: unless-stopped
+    volumes:
+      - ./Backend:/var/www/html
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: bta_dashboard
+      DB_USERNAME: postgres
+      DB_PASSWORD: password123
+      REDIS_HOST: redis
+    networks:
+      - bta-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: bta-nginx
+    restart: unless-stopped
+    ports:
+      - "8100:80"
+    volumes:
+      - ./Backend:/var/www/html
+      - ./Backend/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - bta-network
+
   postgres:
     image: postgres:17-alpine
     container_name: bta-postgres

@@ -1,5 +1,9 @@
 
-# NeoBrussels Dashboard – Development Standards
+# NÏOS Analytics Engine – Development Standards
+
+
+NÏOS Analytics Engine is a behavioral analytics platform designed to collect real-time user interaction data from the companion iOS application.
+The system identifies patterns, builds individual profiles, and generates insights to influence UI decisions and optimize user engagement
 
 ## 1️⃣ Project Stack
 - **Frontend:** Vue.js 3 (Composition API)
