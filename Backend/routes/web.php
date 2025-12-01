@@ -1,7 +1,19 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/dashboard');
+
+Route::get('/dashboard', fn () => Inertia::render('Dashboard'));
+Route::get('/sessions', fn () => Inertia::render('Sessions'));
+Route::get('/events', fn () => Inertia::render('Events'));
+Route::get('/search', fn () => Inertia::render('Search'));
+Route::get('/conversions', fn () => Inertia::render('Conversions'));
+Route::get('/heatmap', fn () => Inertia::render('Heatmap'));
+Route::get('/settings', fn () => Inertia::render('Settings'));
+
+Route::get('/api/stats/overview', [AnalyticsController::class, 'overview']);
+Route::get('/api/stats/events', [AnalyticsController::class, 'events']);
+Route::get('/api/stats/sessions', [AnalyticsController::class, 'sessions']);
