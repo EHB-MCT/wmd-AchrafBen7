@@ -2,7 +2,7 @@
     <div class="relative" ref="root">
         <button
             type="button"
-            class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:border-slate-300"
+            class="flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-5 py-2.5 text-sm font-semibold text-slate-600 shadow-[0_12px_30px_rgba(15,23,42,0.08)] transition hover:border-slate-300"
             @click="open = !open"
         >
             <span>{{ activeLabel }}</span>
@@ -12,15 +12,19 @@
         </button>
         <div
             v-if="open"
-            class="absolute right-0 z-20 mt-2 w-48 rounded-2xl border border-slate-100 bg-white p-3 text-sm shadow-xl"
+            class="absolute right-0 z-20 mt-3 w-56 rounded-3xl border border-slate-100 bg-white/95 p-4 text-sm shadow-[0_20px_45px_rgba(15,23,42,0.15)]"
         >
-            <p class="px-2 pb-2 text-xs font-semibold uppercase text-slate-400">Plage</p>
-            <ul class="space-y-1">
+            <p class="px-2 pb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Periode</p>
+            <ul class="space-y-2">
                 <li v-for="preset in presets" :key="preset.value">
                     <button
                         type="button"
-                        class="flex w-full items-center justify-between rounded-xl px-3 py-2 transition"
-                        :class="modelValue === preset.value ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'"
+                        class="flex w-full items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm transition"
+                        :class="
+                            modelValue === preset.value
+                                ? 'bg-slate-900 text-white shadow-[0_10px_25px_rgba(15,23,42,0.2)]'
+                                : 'text-slate-600 hover:bg-slate-100'
+                        "
                         @click="selectRange(preset.value)"
                     >
                         <span>{{ preset.label }}</span>
@@ -43,9 +47,9 @@ const props = defineProps({
     presets: {
         type: Array,
         default: () => [
-            { label: 'Dernières 24h', value: '24h' },
-            { label: '7 derniers jours', value: '7d' },
-            { label: '30 derniers jours', value: '30d' },
+            { label: 'Laatste 24u', value: '24h' },
+            { label: 'Laatste 7 dagen', value: '7d' },
+            { label: 'Laatste 30 dagen', value: '30d' },
         ],
     },
 });
@@ -59,7 +63,7 @@ const selectRange = (value) => {
     open.value = false;
 };
 
-const activeLabel = computed(() => props.presets.find((preset) => preset.value === props.modelValue)?.label ?? 'Plage');
+const activeLabel = computed(() => props.presets.find((preset) => preset.value === props.modelValue)?.label ?? 'Periode');
 
 const handleClick = (event) => {
     if (!root.value) {
