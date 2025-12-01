@@ -5,7 +5,17 @@
                 <p class="text-sm text-slate-500">Krijg zicht op engagementgedrag</p>
                 <h2 class="text-3xl font-semibold text-slate-900">Sessies</h2>
             </div>
-            <DateRangePicker v-model="selectedRange" />
+            <div class="flex items-center gap-3">
+                <button
+                    type="button"
+                    class="rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide"
+                    :class="compareMode ? 'border-sky-500 bg-sky-50 text-sky-700' : 'border-slate-200 text-slate-500'"
+                    @click="compareMode = !compareMode"
+                >
+                    Compare
+                </button>
+                <DateRangePicker v-model="selectedRange" />
+            </div>
         </div>
 
         <div class="grid gap-5 md:grid-cols-3">
@@ -25,17 +35,7 @@
                 <div class="mt-4">
                     <ChartLine
                         :labels="metrics.timeline.labels"
-                        :datasets="[
-                            {
-                                label: 'Sessies',
-                                data: metrics.timeline.data,
-                                borderColor: '#0ea5e9',
-                                backgroundColor: 'rgba(14, 165, 233, 0.15)',
-                                borderWidth: 3,
-                                pointRadius: 0,
-                                fill: true,
-                            },
-                        ]"
+                        :datasets="trendDatasets"
                     />
                 </div>
             </div>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
@@ -107,15 +107,44 @@ const metrics = ref({
 
 const platforms = ref([]);
 const selectedRange = ref('7d');
+const compareMode = ref(false);
 
 const loadSessions = async () => {
     const { data } = await axios.get('/api/stats/sessions', {
-        params: { range: selectedRange.value },
+        params: { range: selectedRange.value, compare: compareMode.value },
     });
     metrics.value = data;
     platforms.value = Object.entries(data.platforms ?? {}).map(([label, value]) => ({ label, value }));
 };
 
 onMounted(loadSessions);
-watch(selectedRange, loadSessions);
+watch([selectedRange, compareMode], loadSessions);
+
+const trendDatasets = computed(() => {
+    const datasets = [
+        {
+            label: 'Sessies',
+            data: metrics.value.timeline.data,
+            borderColor: '#0ea5e9',
+            backgroundColor: 'rgba(14, 165, 233, 0.15)',
+            borderWidth: 3,
+            pointRadius: 0,
+            fill: true,
+        },
+    ];
+
+    if (metrics.value.comparison?.timeline) {
+        datasets.push({
+            label: 'Vorige periode',
+            data: metrics.value.comparison.timeline.data,
+            borderColor: '#94a3b8',
+            borderDash: [6, 6],
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false,
+        });
+    }
+
+    return datasets;
+});
 </script>

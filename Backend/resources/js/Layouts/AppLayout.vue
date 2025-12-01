@@ -80,6 +80,7 @@ const links = [
     { href: '/dashboard', label: 'Overzicht', icon: 'dashboard' },
     { href: '/sessions', label: 'Sessies', icon: 'sessions' },
     { href: '/events', label: 'Evenementen', icon: 'events' },
+    { href: '/timeline', label: 'User Timeline', icon: 'timeline' },
     { href: '/search', label: 'Zoekopdrachten', icon: 'search' },
     { href: '/conversions', label: 'Conversies', icon: 'conversions' },
     { href: '/heatmap', label: 'Heatmap', icon: 'heatmap' },

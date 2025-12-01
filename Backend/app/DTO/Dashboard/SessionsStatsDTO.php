@@ -9,6 +9,7 @@ class SessionsStatsDTO
         public readonly array $platforms,
         public readonly array $timeline,
         public readonly array $recent,
+        public readonly ?array $comparison = null,
     ) {
     }
 
@@ -19,6 +20,7 @@ class SessionsStatsDTO
             'platforms' => $this->platforms,
             'timeline' => $this->timeline,
             'recent' => $this->recent,
+            'comparison' => $this->comparison,
         ];
     }
 }

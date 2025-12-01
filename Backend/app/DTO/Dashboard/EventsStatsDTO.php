@@ -8,6 +8,7 @@ class EventsStatsDTO
         public readonly array $totals,
         public readonly array $timeline,
         public readonly array $topEvents,
+        public readonly ?array $comparison = null,
     ) {
     }
 
@@ -17,6 +18,7 @@ class EventsStatsDTO
             'totals' => $this->totals,
             'timeline' => $this->timeline,
             'top_events' => $this->topEvents,
+            'comparison' => $this->comparison,
         ];
     }
 }

@@ -41,6 +41,7 @@ const iconMap = {
     conversions: 'M5 12h14M12 5l7 7-7 7',
     heatmap: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
     settings: 'M12 8a4 4 0 100 8 4 4 0 000-8zm8 4l2 0M2 12l2 0M12 2l0 2M12 20l0 2',
+    timeline: 'M4 12h16M12 4v16M8 8h.01M16 16h.01',
 };
 
 const page = usePage();

@@ -5,7 +5,17 @@
                 <p class="text-sm text-slate-500">Productactiviteit</p>
                 <h2 class="text-3xl font-semibold text-slate-900">Evenementen</h2>
             </div>
-            <DateRangePicker v-model="selectedRange" />
+            <div class="flex items-center gap-3">
+                <button
+                    type="button"
+                    class="rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide"
+                    :class="compareMode ? 'border-sky-500 bg-sky-50 text-sky-700' : 'border-slate-200 text-slate-500'"
+                    @click="compareMode = !compareMode"
+                >
+                    Compare
+                </button>
+                <DateRangePicker v-model="selectedRange" />
+            </div>
         </div>
 
         <div class="grid gap-5 md:grid-cols-3">
@@ -65,18 +75,20 @@ const metrics = ref({
     totals: {},
     timeline: { labels: [], data: [] },
     top_events: [],
+    comparison: null,
 });
 const selectedRange = ref('7d');
+const compareMode = ref(false);
 
 const loadEvents = async () => {
     const { data } = await axios.get('/api/stats/events', {
-        params: { range: selectedRange.value },
+        params: { range: selectedRange.value, compare: compareMode.value },
     });
     metrics.value = data;
 };
 
 onMounted(loadEvents);
-watch(selectedRange, loadEvents);
+watch([selectedRange, compareMode], loadEvents);
 
 const datasets = computed(() => [
     {
@@ -86,5 +98,16 @@ const datasets = computed(() => [
         borderRadius: 12,
         maxBarThickness: 32,
     },
+    ...(metrics.value.comparison?.timeline
+        ? [
+              {
+                  label: 'Vorige periode',
+                  data: metrics.value.comparison.timeline.data,
+                  backgroundColor: 'rgba(148, 163, 184, 0.5)',
+                  borderRadius: 12,
+                  maxBarThickness: 32,
+              },
+          ]
+        : []),
 ]);
 </script>

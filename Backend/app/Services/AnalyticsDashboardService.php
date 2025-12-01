@@ -5,6 +5,11 @@ namespace App\Services;
 use App\DTO\Dashboard\EventsStatsDTO;
 use App\DTO\Dashboard\OverviewDTO;
 use App\DTO\Dashboard\SessionsStatsDTO;
+use App\Models\Event;
+use App\Models\Funnel;
+use App\Models\SearchQuery;
+use App\Models\User;
+use App\Models\UserSession;
 use App\Repositories\EventRepository;
 use App\Repositories\SessionRepository;
 use Illuminate\Support\Carbon;
@@ -17,7 +22,7 @@ class AnalyticsDashboardService
     ) {
     }
 
-    public function overview(string $range = '7d'): OverviewDTO
+    public function overview(string $range = '7d', bool $withComparison = false): OverviewDTO
     {
         [$weekStart, $now] = $this->resolveRange($range);
         [$previousStart, $previousEnd] = $this->previousRange($weekStart, $now);
@@ -93,12 +98,31 @@ class AnalyticsDashboardService
             'events' => array_values($activityEvents),
         ];
 
-        return new OverviewDTO($kpis, $activity, $realtime);
+        $comparison = null;
+
+        if ($withComparison) {
+            $previousSessions = $this->sessions->dailyCounts($previousStart, $previousEnd);
+            $previousEvents = $this->events->dailyCounts($previousStart, $previousEnd);
+
+            $comparison = [
+                'activity' => [
+                    'labels' => array_map(
+                        fn ($date) => Carbon::parse($date)->isoFormat('ddd'),
+                        array_keys($previousSessions)
+                    ),
+                    'sessions' => array_values($previousSessions),
+                    'events' => array_values($previousEvents),
+                ],
+            ];
+        }
+
+        return new OverviewDTO($kpis, $activity, $realtime, $comparison);
     }
 
-    public function events(string $range = '7d'): EventsStatsDTO
+    public function events(string $range = '7d', bool $withComparison = false): EventsStatsDTO
     {
         [$start, $now] = $this->resolveRange($range);
+        [$previousStart, $previousEnd] = $this->previousRange($start, $now);
 
         $timeline = $this->events->dailyCounts($start, $now);
         $totals = [
@@ -111,6 +135,31 @@ class AnalyticsDashboardService
             ? round(($totals['conversions'] / $totals['unique_sessions']) * 100, 1)
             : 0;
 
+        $comparison = null;
+
+        if ($withComparison) {
+            $previousTimeline = $this->events->dailyCounts($previousStart, $previousEnd);
+            $previousTotals = [
+                'weekly' => $this->events->countBetween($previousStart, $previousEnd),
+                'conversions' => $this->events->countByType('conversion', $previousStart, $previousEnd),
+                'unique_sessions' => $this->sessions->countBetween($previousStart, $previousEnd),
+            ];
+            $previousTotals['conversion_rate'] = $previousTotals['unique_sessions'] > 0
+                ? round(($previousTotals['conversions'] / $previousTotals['unique_sessions']) * 100, 1)
+                : 0;
+
+            $comparison = [
+                'timeline' => [
+                    'labels' => array_map(
+                        fn ($date) => Carbon::parse($date)->isoFormat('ddd'),
+                        array_keys($previousTimeline)
+                    ),
+                    'data' => array_values($previousTimeline),
+                ],
+                'totals' => $previousTotals,
+            ];
+        }
+
         return new EventsStatsDTO(
             totals: $totals,
             timeline: [
@@ -121,12 +170,14 @@ class AnalyticsDashboardService
                 'data' => array_values($timeline),
             ],
             topEvents: $this->events->topEvents(6, $start, $now)->all(),
+            comparison: $comparison,
         );
     }
 
-    public function sessions(string $range = '7d'): SessionsStatsDTO
+    public function sessions(string $range = '7d', bool $withComparison = false): SessionsStatsDTO
     {
         [$start, $now] = $this->resolveRange($range);
+        [$previousStart, $previousEnd] = $this->previousRange($start, $now);
 
         $timeline = $this->sessions->dailyCounts($start, $now);
         $recentSessions = $this->sessions->recent()->map(function ($session) {
@@ -145,6 +196,27 @@ class AnalyticsDashboardService
             'average_duration' => $this->formatDuration($this->sessions->averageDuration($start, $now)),
         ];
 
+        $comparison = null;
+
+        if ($withComparison) {
+            $previousTimeline = $this->sessions->dailyCounts($previousStart, $previousEnd);
+
+            $comparison = [
+                'timeline' => [
+                    'labels' => array_map(
+                        fn ($date) => Carbon::parse($date)->isoFormat('ddd'),
+                        array_keys($previousTimeline)
+                    ),
+                    'data' => array_values($previousTimeline),
+                ],
+                'totals' => [
+                    'active' => $this->sessions->countSince($previousEnd->copy()->subDay()),
+                    'weekly' => $this->sessions->countBetween($previousStart, $previousEnd),
+                    'average_duration' => $this->formatDuration($this->sessions->averageDuration($previousStart, $previousEnd)),
+                ],
+            ];
+        }
+
         return new SessionsStatsDTO(
             totals: $totals,
             platforms: $this->sessions->platformBreakdown($start, $now),
@@ -156,7 +228,247 @@ class AnalyticsDashboardService
                 'data' => array_values($timeline),
             ],
             recent: $recentSessions,
+            comparison: $comparison,
         );
+    }
+
+    public function heatmap(string $range = '24h'): array
+    {
+        [$start, $end] = $this->resolveRange($range);
+
+        $points = Event::select('device_x', 'device_y')
+            ->selectRaw('COUNT(*) as total')
+            ->whereNotNull('device_x')
+            ->whereNotNull('device_y')
+            ->whereBetween('timestamp', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
+            ->groupBy('device_x', 'device_y')
+            ->orderByDesc('total')
+            ->get();
+
+        $maxX = max(1, (int) $points->max('device_x'));
+        $maxY = max(1, (int) $points->max('device_y'));
+        $maxIntensity = max(1, (int) $points->max('total'));
+
+        return [
+            'points' => $points->map(fn ($point) => [
+                'x' => $point->device_x,
+                'y' => $point->device_y,
+                'normalized_x' => $point->device_x / $maxX,
+                'normalized_y' => $point->device_y / $maxY,
+                'count' => (int) $point->total,
+                'intensity' => round($point->total / $maxIntensity, 3),
+            ])->values(),
+            'meta' => [
+                'total_events' => $points->sum('total'),
+                'max_intensity' => $maxIntensity,
+                'max_x' => $maxX,
+                'max_y' => $maxY,
+                'range' => $range,
+            ],
+        ];
+    }
+
+    public function timeline(?string $userId, string $range = '7d'): array
+    {
+        [$start, $end] = $this->resolveRange($range);
+
+        $users = User::has('sessions')
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        if (! $userId && $users->isNotEmpty()) {
+            $userId = $users->first()->id;
+        }
+
+        if (! $userId) {
+            return [
+                'users' => $users,
+                'active_user' => null,
+                'entries' => [],
+            ];
+        }
+
+        $sessions = UserSession::with(['events' => function ($query) use ($start, $end) {
+            $query->whereBetween('timestamp', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
+                ->orderBy('timestamp');
+        }])
+            ->where('user_id', $userId)
+            ->whereBetween('start_time', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
+            ->orderBy('start_time', 'desc')
+            ->limit(5)
+            ->get();
+
+        $entries = [];
+
+        foreach ($sessions as $session) {
+            $entries[] = [
+                'id' => $session->id . '-start',
+                'kind' => 'session_start',
+                'label' => 'Session démarrée',
+                'timestamp' => optional($session->start_time)?->toAtomString(),
+                'meta' => [
+                    'platform' => $session->platform,
+                    'battery' => $session->battery_level,
+                ],
+            ];
+
+            foreach ($session->events as $event) {
+                $entries[] = [
+                    'id' => $event->id,
+                    'kind' => 'event',
+                    'type' => $event->type,
+                    'label' => $event->name,
+                    'timestamp' => optional($event->timestamp)?->toAtomString(),
+                    'meta' => [
+                        'screen' => $event->value['screen'] ?? null,
+                        'details' => $event->value['label'] ?? null,
+                    ],
+                ];
+            }
+
+            $entries[] = [
+                'id' => $session->id . '-end',
+                'kind' => 'session_end',
+                'label' => 'Session terminée',
+                'timestamp' => optional($session->end_time ?? $session->start_time)?->toAtomString(),
+                'meta' => [
+                    'duration' => $this->formatDuration((int) $session->duration_seconds),
+                ],
+            ];
+        }
+
+        return [
+            'users' => $users,
+            'active_user' => $userId,
+            'entries' => $entries,
+            'range' => $range,
+        ];
+    }
+
+    public function kpiSnapshot(string $range = '7d'): array
+    {
+        [$start, $end] = $this->resolveRange($range);
+        [$previousStart, $previousEnd] = $this->previousRange($start, $end);
+
+        $overviewKpis = [
+            'sessions' => $this->sessions->countBetween($start, $end),
+            'events' => $this->events->countBetween($start, $end),
+            'conversions' => $this->events->countByType('conversion', $start, $end),
+            'average_duration' => $this->formatDuration($this->sessions->averageDuration($start, $end)),
+        ];
+
+        $conversionPages = Event::selectRaw("COALESCE(value->>'screen', name) as screen")
+            ->selectRaw('COUNT(*) as total')
+            ->where('type', 'conversion')
+            ->whereBetween('timestamp', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
+            ->groupBy('screen')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get()
+            ->map(fn ($row) => [
+                'screen' => $row->screen ?? 'Onbekend',
+                'total' => (int) $row->total,
+            ])->all();
+
+        $search = $this->search($range);
+        $conversions = $this->conversions($range);
+
+        return [
+            'range' => $range,
+            'current_period' => [$start->toDateString(), $end->toDateString()],
+            'previous_period' => [$previousStart->toDateString(), $previousEnd->toDateString()],
+            'overview' => $overviewKpis,
+            'search' => $search,
+            'conversions' => $conversions,
+            'top_conversion_pages' => $conversionPages,
+        ];
+    }
+
+    public function search(string $range = '7d'): array
+    {
+        [$start, $end] = $this->resolveRange($range);
+        $bounds = [$start->copy()->startOfDay(), $end->copy()->endOfDay()];
+
+        $baseQuery = SearchQuery::query()->whereBetween('timestamp', $bounds);
+        $total = (clone $baseQuery)->count();
+        $zero = (clone $baseQuery)->where('result_count', 0)->count();
+
+        $topQueries = SearchQuery::select('query')
+            ->selectRaw('COUNT(*) as volume')
+            ->selectRaw('AVG(result_count) as avg_results')
+            ->whereBetween('timestamp', $bounds)
+            ->groupBy('query')
+            ->orderByDesc('volume')
+            ->limit(8)
+            ->get()
+            ->map(fn ($row) => [
+                'phrase' => $row->query,
+                'volume' => (int) $row->volume,
+                'conversion' => $this->conversionRateFromResults((float) $row->avg_results),
+            ])
+            ->all();
+
+        return [
+            'totals' => [
+                'searches' => $total,
+                'click_rate' => $total > 0 ? round((($total - $zero) / $total) * 100, 1) : 0,
+                'zero_result_rate' => $total > 0 ? round(($zero / $total) * 100, 1) : 0,
+            ],
+            'top_queries' => $topQueries,
+        ];
+    }
+
+    public function conversions(string $range = '7d'): array
+    {
+        [$start, $end] = $this->resolveRange($range);
+        $bounds = [$start->copy()->startOfDay(), $end->copy()->endOfDay()];
+
+        $steps = Funnel::select('step', 'step_order')
+            ->selectRaw('COUNT(*) as total')
+            ->whereBetween('timestamp', $bounds)
+            ->groupBy('step', 'step_order')
+            ->orderBy('step_order')
+            ->get();
+
+        $previous = 0;
+        $funnel = $steps->map(function ($step) use (&$previous) {
+            $total = (int) $step->total;
+            $rate = $previous > 0 ? round(($total / $previous) * 100, 1) : 100.0;
+            $previous = max($total, 1);
+
+            return [
+                'label' => $step->step,
+                'value' => $total,
+                'rate' => $rate,
+            ];
+        })->values();
+
+        $stageValue = function (string $label) use ($funnel): int {
+            $stage = $funnel->firstWhere('label', $label);
+
+            return (int) ($stage['value'] ?? 0);
+        };
+
+        $totals = [
+            'visits' => $stageValue('Ontdekking'),
+            'intents' => $stageValue('Intenties'),
+            'quotes' => $stageValue('Offertes'),
+            'bookings' => $stageValue('Boekingen'),
+        ];
+
+        $totals['conversion_rate'] = $totals['visits'] > 0
+            ? round(($totals['bookings'] / max(1, $totals['visits'])) * 100, 1)
+            : 0;
+
+        return [
+            'totals' => $totals,
+            'funnel' => $funnel->map(fn ($stage) => [
+                'label' => $stage['label'],
+                'value' => $stage['value'],
+                'rate' => $stage['rate'],
+            ])->all(),
+        ];
     }
 
     protected function trend(float $current, float $previous): array
@@ -207,5 +519,14 @@ class AnalyticsDashboardService
         $previousStart = $previousEnd->copy()->subDays($length - 1);
 
         return [$previousStart, $previousEnd];
+    }
+
+    protected function conversionRateFromResults(float $avgResults): float
+    {
+        if ($avgResults <= 0) {
+            return 2.0;
+        }
+
+        return round(min(85, max(2, $avgResults * 2.4)), 1);
     }
 }

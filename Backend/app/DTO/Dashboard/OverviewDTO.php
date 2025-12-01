@@ -8,6 +8,7 @@ class OverviewDTO
         public readonly array $kpis,
         public readonly array $activity,
         public readonly array $realtime,
+        public readonly ?array $comparison = null,
     ) {
     }
 
@@ -17,6 +18,7 @@ class OverviewDTO
             'kpis' => $this->kpis,
             'activity' => $this->activity,
             'realtime' => $this->realtime,
+            'comparison' => $this->comparison,
         ];
     }
 }

@@ -10,7 +10,9 @@ class Funnel extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = ['id', 'user_id', 'step', 'timestamp'];
+    public $timestamps = false;
+
+    protected $fillable = ['id', 'user_id', 'step', 'step_order', 'timestamp'];
 
     protected $casts = [
         'timestamp' => 'datetime',
