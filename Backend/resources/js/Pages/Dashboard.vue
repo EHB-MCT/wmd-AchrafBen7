@@ -1,24 +1,13 @@
 <template>
-    <div class="space-y-6">
-        <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-            <div>
-                <p class="text-sm text-slate-500">Analyse comportementale NiOS • Derniers 7 jours</p>
-                <h2 class="text-3xl font-semibold text-slate-900">Vue d’ensemble</h2>
-            </div>
-            <div class="flex gap-2">
-                <FilterChip
-                    v-for="preset in presets"
-                    :key="preset.value"
-                    :label="preset.label"
-                    :value="preset.value"
-                    :model-value="selectedRange"
-                    :active="selectedRange === preset.value"
-                    @update:model-value="(val) => (selectedRange = val)"
-                />
-            </div>
+    <div class="space-y-8">
+        <div>
+            <h2 class="text-4xl font-semibold text-slate-900">Overzicht</h2>
+            <p class="mt-1 text-base text-slate-500">
+                NiOS gedragsanalyse • Laatste {{ rangeLabel }}
+            </p>
         </div>
 
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             <CardStat
                 v-for="kpi in overview.kpis"
                 :key="kpi.label"
@@ -31,15 +20,13 @@
         </div>
 
         <div class="grid gap-6 lg:grid-cols-3">
-            <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-2">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-lg font-semibold">Activité de la semaine</p>
-                        <p class="text-sm text-slate-500">Sessions et événements par jour</p>
-                    </div>
+            <div class="rounded-[32px] border border-[#e4e9f3] bg-white/95 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.06)] lg:col-span-2">
+                <div class="flex flex-col gap-1">
+                    <p class="text-lg font-semibold text-slate-900">Weekactiviteit</p>
+                    <p class="text-sm text-slate-500">Sessies en events per dag</p>
                 </div>
-                <div class="mt-4">
-                    <ChartLine :labels="overview.activity.labels" :datasets="activityDatasets" />
+                <div class="mt-6">
+                    <ChartLine :labels="overview.activity.labels" :datasets="activityDatasets" :height="320" />
                 </div>
             </div>
             <RealTimeFeed :items="overview.realtime" />
@@ -48,21 +35,14 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
 import ChartLine from '../Components/ChartLine.vue';
 import RealTimeFeed from '../Components/RealTimeFeed.vue';
-import FilterChip from '../Components/FilterChip.vue';
 
 defineOptions({ layout: AppLayout });
-
-const presets = [
-    { label: '24h', value: '24h' },
-    { label: '7j', value: '7d' },
-    { label: '30j', value: '30d' },
-];
 
 const overview = ref({
     kpis: [],
@@ -79,11 +59,10 @@ const fetchOverview = async () => {
 };
 
 onMounted(fetchOverview);
-watch(selectedRange, fetchOverview);
 
 const activityDatasets = computed(() => [
     {
-        label: 'Sessions',
+        label: 'Sessies',
         data: overview.value.activity.sessions,
         backgroundColor: 'rgba(59, 130, 246, 0.15)',
         borderColor: '#3b82f6',
@@ -92,7 +71,7 @@ const activityDatasets = computed(() => [
         pointRadius: 0,
     },
     {
-        label: 'Événements',
+        label: 'Evenementen',
         data: overview.value.activity.events,
         backgroundColor: 'rgba(99, 102, 241, 0.15)',
         borderColor: '#6366f1',
@@ -101,4 +80,14 @@ const activityDatasets = computed(() => [
         pointRadius: 0,
     },
 ]);
+
+const rangeLabel = computed(() => {
+    const map = {
+        '24h': '24 uur',
+        '7d': '7 dagen',
+        '30d': '30 dagen',
+    };
+
+    return map[selectedRange.value] ?? '7 dagen';
+});
 </script>

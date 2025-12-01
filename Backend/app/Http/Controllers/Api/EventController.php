@@ -31,10 +31,11 @@ class EventController extends Controller
 
         $event = $this->analytics->recordEvent($dto);
 
+        // 🔥 Realtime-analyse
         $this->engine->process($event);
 
         return response()->json([
-            'status' => 'recorded',
+            'status' => 'opgeslagen',
             'event_id' => $event->id,
         ]);
     }

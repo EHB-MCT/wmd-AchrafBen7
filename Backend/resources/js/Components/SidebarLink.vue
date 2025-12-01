@@ -1,13 +1,25 @@
 <template>
     <Link
         :href="href"
-        class="flex items-center gap-3 rounded-xl px-4 py-2 text-sm font-medium transition"
-        :class="isActive ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white'"
+        class="group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition"
+        :class="
+            isActive
+                ? 'bg-white/15 text-white shadow-[0_8px_24px_rgba(15,23,42,0.35)]'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+        "
     >
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path :d="iconPath" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <span>{{ label }}</span>
+        <span
+            class="h-8 w-1 rounded-full transition"
+            :class="isActive ? 'bg-sky-400' : 'bg-transparent group-hover:bg-white/50'"
+        />
+        <span
+            class="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition group-hover:border-white/20"
+        >
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path :d="iconPath" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </span>
+        <span class="tracking-tight">{{ label }}</span>
     </Link>
 </template>
 

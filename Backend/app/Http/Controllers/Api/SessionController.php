@@ -26,7 +26,7 @@ class SessionController extends Controller
         $session = $this->analytics->recordSessionStart($dto);
 
         return response()->json([
-            'status' => 'started',
+            'status' => 'gestart',
             'session' => $session,
         ]);
     }
@@ -40,6 +40,6 @@ class SessionController extends Controller
 
         $this->analytics->recordSessionEnd($dto);
 
-        return response()->json(['status' => 'ended']);
+        return response()->json(['status' => 'afgesloten']);
     }
 }

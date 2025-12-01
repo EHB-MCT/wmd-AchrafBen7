@@ -2,17 +2,17 @@
     <div class="space-y-6">
         <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-                <p class="text-sm text-slate-500">Activité produit</p>
-                <h2 class="text-3xl font-semibold text-slate-900">Événements</h2>
+                <p class="text-sm text-slate-500">Productactiviteit</p>
+                <h2 class="text-3xl font-semibold text-slate-900">Evenementen</h2>
             </div>
             <DateRangePicker v-model="selectedRange" />
         </div>
 
         <div class="grid gap-5 md:grid-cols-3">
-            <CardStat label="Total hebdo" :value="metrics.totals.weekly?.toString() ?? '0'" icon="sparkles" />
-            <CardStat label="Conversions" :value="metrics.totals.conversions?.toString() ?? '0'" icon="conversions" />
+            <CardStat label="Totaal per week" :value="metrics.totals.weekly?.toString() ?? '0'" icon="sparkles" />
+            <CardStat label="Conversies" :value="metrics.totals.conversions?.toString() ?? '0'" icon="conversions" />
             <CardStat
-                label="Taux de conversion"
+                label="Conversieratio"
                 :value="metrics.totals.conversion_rate ? `${metrics.totals.conversion_rate}%` : '0%'"
                 icon="trending-up"
             />
@@ -21,8 +21,8 @@
         <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-lg font-semibold">Timeline</p>
-                    <p class="text-sm text-slate-500">Volume d’événements quotidiens</p>
+                    <p class="text-lg font-semibold">Tijdlijn</p>
+                    <p class="text-sm text-slate-500">Dagelijks eventvolume</p>
                 </div>
             </div>
             <div class="mt-4">
@@ -33,8 +33,8 @@
         <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-lg font-semibold">Top événements</p>
-                    <p class="text-sm text-slate-500">Interactions les plus fréquentes</p>
+                    <p class="text-lg font-semibold">Belangrijkste events</p>
+                    <p class="text-sm text-slate-500">Meest voorkomende interacties</p>
                 </div>
             </div>
             <ul class="mt-4 space-y-3">
@@ -45,7 +45,7 @@
                     </div>
                     <span class="text-sm font-semibold text-slate-600">{{ event.total }}</span>
                 </li>
-                <li v-if="metrics.top_events.length === 0" class="text-sm text-slate-400">Aucune donnée disponible.</li>
+                <li v-if="metrics.top_events.length === 0" class="text-sm text-slate-400">Geen gegevens beschikbaar.</li>
             </ul>
         </div>
     </div>
@@ -80,7 +80,7 @@ watch(selectedRange, loadEvents);
 
 const datasets = computed(() => [
     {
-        label: 'Événements',
+        label: 'Evenementen',
         data: metrics.value.timeline.data,
         backgroundColor: 'rgba(59, 130, 246, 0.6)',
         borderRadius: 12,
