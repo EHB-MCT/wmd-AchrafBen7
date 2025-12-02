@@ -425,6 +425,12 @@ class AnalyticsDashboardService
         $baseQuery = SearchQuery::query()->whereBetween('timestamp', $bounds);
         $total = (clone $baseQuery)->count();
         $zero = (clone $baseQuery)->where('result_count', 0)->count();
+        $success = (clone $baseQuery)->where('result_count', '>=', 5)->count();
+        $partial = (clone $baseQuery)->whereBetween('result_count', [1, 4])->count();
+
+        if (($success + $partial + $zero) < $total) {
+            $partial += $total - ($success + $partial + $zero);
+        }
 
         $topQueries = SearchQuery::select('query')
             ->selectRaw('COUNT(*) as volume')
@@ -448,6 +454,20 @@ class AnalyticsDashboardService
                 'zero_result_rate' => $total > 0 ? round(($zero / $total) * 100, 1) : 0,
             ],
             'top_queries' => $topQueries,
+            'distribution' => [
+                'success' => [
+                    'count' => $success,
+                    'percentage' => $total > 0 ? round(($success / $total) * 100, 1) : 0,
+                ],
+                'partial' => [
+                    'count' => $partial,
+                    'percentage' => $total > 0 ? round(($partial / $total) * 100, 1) : 0,
+                ],
+                'empty' => [
+                    'count' => $zero,
+                    'percentage' => $total > 0 ? round(($zero / $total) * 100, 1) : 0,
+                ],
+            ],
         ];
 
         if ($total === 0) {
@@ -686,6 +706,11 @@ class AnalyticsDashboardService
                 ['phrase' => 'Mobiele uitdeukservice', 'volume' => 980, 'conversion' => 9.0],
                 ['phrase' => 'Tesla detailing', 'volume' => 760, 'conversion' => 15.0],
                 ['phrase' => 'Ceramic coating', 'volume' => 680, 'conversion' => 8.0],
+            ],
+            'distribution' => [
+                'success' => ['count' => 10442, 'percentage' => 84.0],
+                'partial' => ['count' => 1243, 'percentage' => 10.0],
+                'empty' => ['count' => 745, 'percentage' => 6.0],
             ],
         ];
     }

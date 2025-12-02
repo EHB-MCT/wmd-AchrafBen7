@@ -15,6 +15,32 @@
         </div>
 
         <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <p class="text-lg font-semibold">Resultaatverdeling</p>
+                    <p class="text-sm text-slate-500">Performance van zoekopdrachten</p>
+                </div>
+                <div class="flex gap-4 text-sm">
+                    <div class="flex items-center gap-2 text-emerald-600">
+                        <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
+                        Succes {{ metrics.distribution.success?.percentage ?? 0 }}%
+                    </div>
+                    <div class="flex items-center gap-2 text-amber-600">
+                        <span class="h-3 w-3 rounded-full bg-amber-400"></span>
+                        Gedeeltelijk {{ metrics.distribution.partial?.percentage ?? 0 }}%
+                    </div>
+                    <div class="flex items-center gap-2 text-rose-600">
+                        <span class="h-3 w-3 rounded-full bg-rose-500"></span>
+                        Geen resultaat {{ metrics.distribution.empty?.percentage ?? 0 }}%
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6">
+                <ChartPie :labels="distributionLabels" :datasets="distributionDatasets" :height="320" />
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <p class="text-lg font-semibold">Top zoektermen</p>
             </div>
@@ -44,17 +70,23 @@
 </template>
 
 <script setup>
-import { inject, onMounted, ref, watch } from 'vue';
+import { computed, inject, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
 import DateRangePicker from '../Components/DateRangePicker.vue';
+import ChartPie from '../Components/ChartPie.vue';
 
 defineOptions({ layout: AppLayout });
 
 const metrics = ref({
     totals: { searches: 0, click_rate: 0, zero_result_rate: 0 },
     top_queries: [],
+    distribution: {
+        success: { count: 0, percentage: 0 },
+        partial: { count: 0, percentage: 0 },
+        empty: { count: 0, percentage: 0 },
+    },
 });
 const selectedRange = inject('globalRange', ref('7d'));
 const numberFormatter = new Intl.NumberFormat('nl-NL');
@@ -70,4 +102,17 @@ const loadSearchStats = async () => {
 
 onMounted(loadSearchStats);
 watch(selectedRange, loadSearchStats);
+
+const distributionLabels = ['Succes', 'Gedeeltelijk', 'Geen resultaat'];
+const distributionDatasets = computed(() => [
+    {
+        data: [
+            metrics.value.distribution.success?.count ?? 0,
+            metrics.value.distribution.partial?.count ?? 0,
+            metrics.value.distribution.empty?.count ?? 0,
+        ],
+        backgroundColor: ['#22c55e', '#f59e0b', '#f87171'],
+        borderWidth: 0,
+    },
+]);
 </script>
