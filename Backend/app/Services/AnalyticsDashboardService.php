@@ -302,11 +302,7 @@ class AnalyticsDashboardService
         }
 
         if (! $userId) {
-            return [
-                'users' => $users,
-                'active_user' => null,
-                'entries' => [],
-            ];
+            return $this->mockTimeline($users);
         }
 
         $sessions = UserSession::with(['events' => function ($query) use ($start, $end) {
