@@ -61,6 +61,10 @@ class AnalyticsDashboardService
             ];
         })->all();
 
+        if ($sessionCount === 0 && $eventCount === 0) {
+            return $this->mockOverview();
+        }
+
         $kpis = [
             [
                 'label' => 'Sessions actives',
@@ -116,6 +120,10 @@ class AnalyticsDashboardService
             ];
         }
 
+        if (empty($realtime)) {
+            $realtime = $this->mockRealtime();
+        }
+
         return new OverviewDTO($kpis, $activity, $realtime, $comparison);
     }
 
@@ -134,6 +142,10 @@ class AnalyticsDashboardService
         $totals['conversion_rate'] = $totals['unique_sessions'] > 0
             ? round(($totals['conversions'] / $totals['unique_sessions']) * 100, 1)
             : 0;
+
+        if ($totals['weekly'] === 0) {
+            return $this->mockEventsStats();
+        }
 
         $comparison = null;
 
@@ -196,6 +208,10 @@ class AnalyticsDashboardService
             'average_duration' => $this->formatDuration($this->sessions->averageDuration($start, $now)),
         ];
 
+        if ($totals['weekly'] === 0) {
+            return $this->mockSessionsStats();
+        }
+
         $comparison = null;
 
         if ($withComparison) {
@@ -244,6 +260,10 @@ class AnalyticsDashboardService
             ->groupBy('device_x', 'device_y')
             ->orderByDesc('total')
             ->get();
+
+        if ($points->isEmpty()) {
+            return $this->mockHeatmap();
+        }
 
         $maxX = max(1, (int) $points->max('device_x'));
         $maxY = max(1, (int) $points->max('device_y'));
@@ -338,12 +358,18 @@ class AnalyticsDashboardService
             ];
         }
 
-        return [
+        $payload = [
             'users' => $users,
             'active_user' => $userId,
             'entries' => $entries,
             'range' => $range,
         ];
+
+        if (empty($entries)) {
+            return $this->mockTimeline($users);
+        }
+
+        return $payload;
     }
 
     public function kpiSnapshot(string $range = '7d'): array
@@ -374,7 +400,7 @@ class AnalyticsDashboardService
         $search = $this->search($range);
         $conversions = $this->conversions($range);
 
-        return [
+        $snapshot = [
             'range' => $range,
             'current_period' => [$start->toDateString(), $end->toDateString()],
             'previous_period' => [$previousStart->toDateString(), $previousEnd->toDateString()],
@@ -383,6 +409,12 @@ class AnalyticsDashboardService
             'conversions' => $conversions,
             'top_conversion_pages' => $conversionPages,
         ];
+
+        if ($overviewKpis['sessions'] === 0 && $overviewKpis['events'] === 0) {
+            return $this->mockKpiSnapshot($range);
+        }
+
+        return $snapshot;
     }
 
     public function search(string $range = '7d'): array
@@ -409,7 +441,7 @@ class AnalyticsDashboardService
             ])
             ->all();
 
-        return [
+        $response = [
             'totals' => [
                 'searches' => $total,
                 'click_rate' => $total > 0 ? round((($total - $zero) / $total) * 100, 1) : 0,
@@ -417,6 +449,12 @@ class AnalyticsDashboardService
             ],
             'top_queries' => $topQueries,
         ];
+
+        if ($total === 0) {
+            return $this->mockSearch();
+        }
+
+        return $response;
     }
 
     public function conversions(string $range = '7d'): array
@@ -461,7 +499,7 @@ class AnalyticsDashboardService
             ? round(($totals['bookings'] / max(1, $totals['visits'])) * 100, 1)
             : 0;
 
-        return [
+        $result = [
             'totals' => $totals,
             'funnel' => $funnel->map(fn ($stage) => [
                 'label' => $stage['label'],
@@ -469,6 +507,12 @@ class AnalyticsDashboardService
                 'rate' => $stage['rate'],
             ])->all(),
         ];
+
+        if (array_sum($totals) === 0) {
+            return $this->mockConversions();
+        }
+
+        return $result;
     }
 
     protected function trend(float $current, float $previous): array
@@ -528,5 +572,243 @@ class AnalyticsDashboardService
         }
 
         return round(min(85, max(2, $avgResults * 2.4)), 1);
+    }
+
+    protected function mockOverview(): OverviewDTO
+    {
+        $activity = [
+            'labels' => ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'],
+            'sessions' => [420, 480, 530, 610, 720, 540, 400],
+            'events' => [1200, 1380, 1420, 1550, 1680, 1400, 1100],
+        ];
+
+        $kpis = [
+            [
+                'label' => 'Sessions actives',
+                'value' => number_format(3280),
+                'subtitle' => 'Utilisateurs uniques',
+                'trend' => ['value' => 8.3, 'isPositive' => true],
+                'icon' => 'users',
+            ],
+            [
+                'label' => 'Événements totaux',
+                'value' => number_format(16240),
+                'subtitle' => 'Actions tracées',
+                'trend' => ['value' => 12.4, 'isPositive' => true],
+                'icon' => 'sparkles',
+            ],
+            [
+                'label' => 'Taux de conversion',
+                'value' => '12.1%',
+                'subtitle' => 'Réservations / Sessions',
+                'trend' => ['value' => 4.6, 'isPositive' => true],
+                'icon' => 'trending-up',
+            ],
+            [
+                'label' => 'Durée moyenne',
+                'value' => '14m 32s',
+                'subtitle' => 'Par session',
+                'trend' => ['value' => 2.2, 'isPositive' => true],
+                'icon' => 'clock',
+            ],
+        ];
+
+        return new OverviewDTO($kpis, $activity, $this->mockRealtime());
+    }
+
+    protected function mockEventsStats(): EventsStatsDTO
+    {
+        return new EventsStatsDTO(
+            totals: [
+                'weekly' => 16240,
+                'conversions' => 432,
+                'unique_sessions' => 980,
+                'conversion_rate' => 12.1,
+            ],
+            timeline: [
+                'labels' => ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'],
+                'data' => [2100, 2200, 2350, 2480, 2600, 2300, 1800],
+            ],
+            topEvents: [
+                ['name' => 'button.primary', 'type' => 'click', 'total' => 4320],
+                ['name' => 'provider.view', 'type' => 'view', 'total' => 3890],
+                ['name' => 'search.performed', 'type' => 'search', 'total' => 2410],
+                ['name' => 'cta.start-booking', 'type' => 'click', 'total' => 1650],
+                ['name' => 'booking.completed', 'type' => 'conversion', 'total' => 432],
+            ],
+        );
+    }
+
+    protected function mockSessionsStats(): SessionsStatsDTO
+    {
+        return new SessionsStatsDTO(
+            totals: [
+                'active' => 420,
+                'weekly' => 3280,
+                'average_duration' => '14m 32s',
+            ],
+            platforms: [
+                'iOS' => 1520,
+                'Android' => 980,
+                'Web' => 780,
+            ],
+            timeline: [
+                'labels' => ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'],
+                'data' => [320, 360, 410, 470, 520, 420, 280],
+            ],
+            recent: [
+                ['id' => 'mock-1', 'user' => 'Sophie', 'platform' => 'iOS', 'duration' => '12m 18s', 'started_at' => 'il y a 4 min'],
+                ['id' => 'mock-2', 'user' => 'Tom', 'platform' => 'Android', 'duration' => '08m 46s', 'started_at' => 'il y a 12 min'],
+                ['id' => 'mock-3', 'user' => 'Noor', 'platform' => 'Web', 'duration' => '18m 02s', 'started_at' => 'il y a 35 min'],
+            ],
+        );
+    }
+
+    protected function mockRealtime(): array
+    {
+        return [
+            ['id' => 'rt-1', 'name' => 'booking.completed', 'type' => 'conversion', 'timestamp' => Carbon::now()->toAtomString(), 'time_ago' => 'à l’instant'],
+            ['id' => 'rt-2', 'name' => 'search.performed', 'type' => 'search', 'timestamp' => Carbon::now()->subMinutes(2)->toAtomString(), 'time_ago' => 'il y a 2 min'],
+            ['id' => 'rt-3', 'name' => 'provider.view', 'type' => 'view', 'timestamp' => Carbon::now()->subMinutes(5)->toAtomString(), 'time_ago' => 'il y a 5 min'],
+        ];
+    }
+
+    protected function mockSearch(): array
+    {
+        return [
+            'totals' => [
+                'searches' => 12430,
+                'click_rate' => 42.0,
+                'zero_result_rate' => 3.0,
+            ],
+            'top_queries' => [
+                ['phrase' => 'Premium polijsten', 'volume' => 1230, 'conversion' => 12.0],
+                ['phrase' => 'Mobiele uitdeukservice', 'volume' => 980, 'conversion' => 9.0],
+                ['phrase' => 'Tesla detailing', 'volume' => 760, 'conversion' => 15.0],
+                ['phrase' => 'Ceramic coating', 'volume' => 680, 'conversion' => 8.0],
+            ],
+        ];
+    }
+
+    protected function mockConversions(): array
+    {
+        $funnel = [
+            ['label' => 'Ontdekking', 'value' => 24900, 'rate' => 100],
+            ['label' => 'Intenties', 'value' => 9320, 'rate' => 37],
+            ['label' => 'Offertes', 'value' => 2410, 'rate' => 26],
+            ['label' => 'Boekingen', 'value' => 1340, 'rate' => 55],
+        ];
+
+        return [
+            'totals' => [
+                'visits' => 24900,
+                'intents' => 9320,
+                'quotes' => 2410,
+                'bookings' => 1340,
+                'conversion_rate' => 5.4,
+            ],
+            'funnel' => $funnel,
+        ];
+    }
+
+    protected function mockHeatmap(): array
+    {
+        $points = [
+            ['x' => 80, 'y' => 640, 'normalized_x' => 0.21, 'normalized_y' => 0.21, 'count' => 128, 'intensity' => 1.0],
+            ['x' => 210, 'y' => 420, 'normalized_x' => 0.56, 'normalized_y' => 0.48, 'count' => 96, 'intensity' => 0.75],
+            ['x' => 330, 'y' => 280, 'normalized_x' => 0.88, 'normalized_y' => 0.65, 'count' => 72, 'intensity' => 0.56],
+            ['x' => 150, 'y' => 180, 'normalized_x' => 0.4, 'normalized_y' => 0.78, 'count' => 58, 'intensity' => 0.45],
+        ];
+
+        return [
+            'points' => $points,
+            'meta' => [
+                'total_events' => array_sum(array_column($points, 'count')),
+                'max_intensity' => 128,
+                'max_x' => 375,
+                'max_y' => 812,
+                'range' => 'mock',
+            ],
+        ];
+    }
+
+    protected function mockTimeline($users): array
+    {
+        $collection = $users;
+        if ($collection->isEmpty()) {
+            $collection = collect([
+                (object) ['id' => 'mock-user', 'name' => 'Productteam'],
+            ]);
+        }
+
+        $entries = [
+            [
+                'id' => 'mock-session-start',
+                'kind' => 'session_start',
+                'label' => 'Session démarrée',
+                'timestamp' => Carbon::now()->subMinutes(18)->toAtomString(),
+                'meta' => ['platform' => 'iOS', 'battery' => 87],
+            ],
+            [
+                'id' => 'mock-event-1',
+                'kind' => 'event',
+                'type' => 'view',
+                'label' => 'provider.view',
+                'timestamp' => Carbon::now()->subMinutes(16)->toAtomString(),
+                'meta' => ['screen' => 'providers', 'details' => 'LuxeWash'],
+            ],
+            [
+                'id' => 'mock-event-2',
+                'kind' => 'event',
+                'type' => 'click',
+                'label' => 'cta.start-booking',
+                'timestamp' => Carbon::now()->subMinutes(14)->toAtomString(),
+                'meta' => ['screen' => 'provider.detail', 'details' => 'CTA Boek'],
+            ],
+            [
+                'id' => 'mock-event-3',
+                'kind' => 'event',
+                'type' => 'conversion',
+                'label' => 'booking.completed',
+                'timestamp' => Carbon::now()->subMinutes(9)->toAtomString(),
+                'meta' => ['screen' => 'booking', 'details' => '€230'],
+            ],
+            [
+                'id' => 'mock-session-end',
+                'kind' => 'session_end',
+                'label' => 'Session terminée',
+                'timestamp' => Carbon::now()->subMinutes(7)->toAtomString(),
+                'meta' => ['duration' => '16m 12s'],
+            ],
+        ];
+
+        return [
+            'users' => $collection,
+            'active_user' => $collection->first()->id,
+            'entries' => $entries,
+            'range' => '7d',
+        ];
+    }
+
+    protected function mockKpiSnapshot(string $range): array
+    {
+        return [
+            'range' => $range,
+            'current_period' => [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()],
+            'previous_period' => [Carbon::now()->subDays(13)->toDateString(), Carbon::now()->subDays(7)->toDateString()],
+            'overview' => [
+                'sessions' => 3280,
+                'events' => 16240,
+                'conversions' => 432,
+                'average_duration' => '14m 32s',
+            ],
+            'search' => $this->mockSearch(),
+            'conversions' => $this->mockConversions(),
+            'top_conversion_pages' => [
+                ['screen' => 'provider.detail', 'total' => 650],
+                ['screen' => 'booking.summary', 'total' => 420],
+                ['screen' => 'offer.detail', 'total' => 310],
+            ],
+        ];
     }
 }
