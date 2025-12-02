@@ -67,30 +67,30 @@ class AnalyticsDashboardService
 
         $kpis = [
             [
-                'label' => 'Sessions actives',
+                'label' => 'Actieve sessies',
                 'value' => number_format($sessionCount),
-                'subtitle' => 'Utilisateurs uniques',
+                'subtitle' => 'Unieke gebruikers',
                 'trend' => $this->trend($sessionCount, $previousSessionCount),
                 'icon' => 'users',
             ],
             [
-                'label' => 'Événements totaux',
+                'label' => 'Totale events',
                 'value' => number_format($eventCount),
-                'subtitle' => 'Actions tracées',
+                'subtitle' => 'Gelogde acties',
                 'trend' => $this->trend($eventCount, $previousEventCount),
                 'icon' => 'sparkles',
             ],
             [
-                'label' => 'Taux de conversion',
+                'label' => 'Conversieratio',
                 'value' => number_format($conversionRate, 1) . '%',
-                'subtitle' => 'Réservations / Sessions',
+                'subtitle' => 'Boekingen / Sessies',
                 'trend' => $this->trend($conversionRate, $previousConversionRate),
                 'icon' => 'trending-up',
             ],
             [
-                'label' => 'Durée moyenne',
+                'label' => 'Gemiddelde duur',
                 'value' => $this->formatDuration($avgDuration),
-                'subtitle' => 'Par session',
+                'subtitle' => 'Per sessie',
                 'trend' => $this->trend($avgDuration, max($previousAvgDuration, 1)),
                 'icon' => 'clock',
             ],
@@ -325,7 +325,7 @@ class AnalyticsDashboardService
             $entries[] = [
                 'id' => $session->id . '-start',
                 'kind' => 'session_start',
-                'label' => 'Session démarrée',
+                'label' => 'Sessie gestart',
                 'timestamp' => optional($session->start_time)?->toAtomString(),
                 'meta' => [
                     'platform' => $session->platform,
@@ -350,7 +350,7 @@ class AnalyticsDashboardService
             $entries[] = [
                 'id' => $session->id . '-end',
                 'kind' => 'session_end',
-                'label' => 'Session terminée',
+                'label' => 'Sessie afgerond',
                 'timestamp' => optional($session->end_time ?? $session->start_time)?->toAtomString(),
                 'meta' => [
                     'duration' => $this->formatDuration((int) $session->duration_seconds),
@@ -584,30 +584,30 @@ class AnalyticsDashboardService
 
         $kpis = [
             [
-                'label' => 'Sessions actives',
+                'label' => 'Actieve sessies',
                 'value' => number_format(3280),
-                'subtitle' => 'Utilisateurs uniques',
+                'subtitle' => 'Unieke gebruikers',
                 'trend' => ['value' => 8.3, 'isPositive' => true],
                 'icon' => 'users',
             ],
             [
-                'label' => 'Événements totaux',
+                'label' => 'Totale events',
                 'value' => number_format(16240),
-                'subtitle' => 'Actions tracées',
+                'subtitle' => 'Gelogde acties',
                 'trend' => ['value' => 12.4, 'isPositive' => true],
                 'icon' => 'sparkles',
             ],
             [
-                'label' => 'Taux de conversion',
+                'label' => 'Conversieratio',
                 'value' => '12.1%',
-                'subtitle' => 'Réservations / Sessions',
+                'subtitle' => 'Boekingen / Sessies',
                 'trend' => ['value' => 4.6, 'isPositive' => true],
                 'icon' => 'trending-up',
             ],
             [
-                'label' => 'Durée moyenne',
+                'label' => 'Gemiddelde duur',
                 'value' => '14m 32s',
-                'subtitle' => 'Par session',
+                'subtitle' => 'Per sessie',
                 'trend' => ['value' => 2.2, 'isPositive' => true],
                 'icon' => 'clock',
             ],
@@ -667,9 +667,9 @@ class AnalyticsDashboardService
     protected function mockRealtime(): array
     {
         return [
-            ['id' => 'rt-1', 'name' => 'booking.completed', 'type' => 'conversion', 'timestamp' => Carbon::now()->toAtomString(), 'time_ago' => 'à l’instant'],
-            ['id' => 'rt-2', 'name' => 'search.performed', 'type' => 'search', 'timestamp' => Carbon::now()->subMinutes(2)->toAtomString(), 'time_ago' => 'il y a 2 min'],
-            ['id' => 'rt-3', 'name' => 'provider.view', 'type' => 'view', 'timestamp' => Carbon::now()->subMinutes(5)->toAtomString(), 'time_ago' => 'il y a 5 min'],
+            ['id' => 'rt-1', 'name' => 'booking.completed', 'type' => 'conversion', 'timestamp' => Carbon::now()->toAtomString(), 'time_ago' => 'zojuist'],
+            ['id' => 'rt-2', 'name' => 'search.performed', 'type' => 'search', 'timestamp' => Carbon::now()->subMinutes(2)->toAtomString(), 'time_ago' => '2 min geleden'],
+            ['id' => 'rt-3', 'name' => 'provider.view', 'type' => 'view', 'timestamp' => Carbon::now()->subMinutes(5)->toAtomString(), 'time_ago' => '5 min geleden'],
         ];
     }
 
@@ -745,7 +745,7 @@ class AnalyticsDashboardService
             [
                 'id' => 'mock-session-start',
                 'kind' => 'session_start',
-                'label' => 'Session démarrée',
+                'label' => 'Sessie gestart',
                 'timestamp' => Carbon::now()->subMinutes(18)->toAtomString(),
                 'meta' => ['platform' => 'iOS', 'battery' => 87],
             ],
@@ -776,7 +776,7 @@ class AnalyticsDashboardService
             [
                 'id' => 'mock-session-end',
                 'kind' => 'session_end',
-                'label' => 'Session terminée',
+                'label' => 'Sessie afgerond',
                 'timestamp' => Carbon::now()->subMinutes(7)->toAtomString(),
                 'meta' => ['duration' => '16m 12s'],
             ],
