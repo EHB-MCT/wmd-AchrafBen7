@@ -54,14 +54,14 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, inject, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import DateRangePicker from '../Components/DateRangePicker.vue';
 
 defineOptions({ layout: AppLayout });
 
-const selectedRange = ref('7d');
+const selectedRange = inject('globalRange', ref('7d'));
 const selectedUser = ref(null);
 const users = ref([]);
 const entries = ref([]);

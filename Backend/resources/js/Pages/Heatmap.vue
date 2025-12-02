@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import FilterChip from '../Components/FilterChip.vue';
@@ -50,7 +50,7 @@ import DateRangePicker from '../Components/DateRangePicker.vue';
 
 defineOptions({ layout: AppLayout });
 
-const selectedRange = ref('24h');
+const selectedRange = inject('globalRange', ref('24h'));
 const heatmap = ref({ points: [], meta: {} });
 const heatmapCanvas = ref(null);
 const heatmapContainer = ref(null);
