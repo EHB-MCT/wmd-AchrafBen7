@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
@@ -53,7 +53,7 @@ const metrics = ref({
     totals: { visits: 0, intents: 0, quotes: 0, bookings: 0, conversion_rate: 0 },
     funnel: [],
 });
-const selectedRange = ref('7d');
+const selectedRange = inject('globalRange', ref('7d'));
 const numberFormatter = new Intl.NumberFormat('nl-NL');
 
 const formatNumber = (value) => numberFormatter.format(value ?? 0);

@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, inject, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
@@ -77,7 +77,7 @@ const metrics = ref({
     top_events: [],
     comparison: null,
 });
-const selectedRange = ref('7d');
+const selectedRange = inject('globalRange', ref('7d'));
 const compareMode = ref(false);
 
 const loadEvents = async () => {

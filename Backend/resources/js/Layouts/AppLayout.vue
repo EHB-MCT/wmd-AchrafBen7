@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, provide, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import DateRangePicker from '../Components/DateRangePicker.vue';
 import SidebarLink from '../Components/SidebarLink.vue';
@@ -92,4 +92,6 @@ const user = computed(() => page.props.auth?.user);
 const version = computed(() => page.props.app?.version ?? 'v1.0.0');
 const initials = computed(() => (user.value?.name ?? 'NA').split(' ').map((part) => part[0]).join('').slice(0, 2));
 const range = ref('7d');
+
+provide('globalRange', range);
 </script>

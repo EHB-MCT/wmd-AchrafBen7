@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, inject, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
@@ -80,7 +80,7 @@ const overview = ref({
     realtime: [],
     comparison: null,
 });
-const selectedRange = ref('7d');
+const selectedRange = inject('globalRange', ref('7d'));
 const compareMode = ref(false);
 
 const fetchOverview = async () => {
