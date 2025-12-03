@@ -35,20 +35,6 @@
                     </div>
                     <div class="flex items-center gap-5">
                         <DateRangePicker v-model="range" />
-                        <button
-                            type="button"
-                            class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:text-slate-700"
-                            aria-label="Notifications"
-                        >
-                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path
-                                    d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m2 0v1a2 2 0 104 0v-1"
-                                    stroke-width="1.5"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                />
-                            </svg>
-                        </button>
                         <div class="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-1.5 shadow-sm">
                             <div class="h-10 w-10 rounded-full bg-sky-500 text-center text-lg leading-10 text-white">
                                 {{ initials }}
