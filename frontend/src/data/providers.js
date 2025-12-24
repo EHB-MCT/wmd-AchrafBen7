@@ -2,7 +2,7 @@ export const serviceProviders = [
   {
     name: "DetailPro Brussels",
     city: "Bruxelles",
-    service: "Polissage complet",
+    service: "Volledig polijsten",
     rating: 4.8,
     coords: [4.3517, 50.8503],
     tags: ["offers", "price", "home", "top"],
@@ -10,7 +10,7 @@ export const serviceProviders = [
   {
     name: "Shine Masters",
     city: "Ixelles",
-    service: "Protection ceramique",
+    service: "Keramische bescherming",
     rating: 4.9,
     coords: [4.3815, 50.8331],
     tags: ["top", "express", "distance"],
@@ -18,7 +18,7 @@ export const serviceProviders = [
   {
     name: "Auto Perfection",
     city: "Uccle",
-    service: "Nettoyage interieur",
+    service: "Interieurreiniging",
     rating: 4.7,
     coords: [4.3366, 50.8038],
     tags: ["offers", "home", "distance"],
@@ -26,7 +26,7 @@ export const serviceProviders = [
   {
     name: "Wash Pro",
     city: "Evere",
-    service: "Lavage premium",
+    service: "Premium wasbeurt",
     rating: 4.6,
     coords: [4.4093, 50.8721],
     tags: ["price", "express", "distance"],

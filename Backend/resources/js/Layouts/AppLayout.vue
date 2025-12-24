@@ -6,7 +6,7 @@
             <div>
                 <div class="mb-12">
                     <p class="text-sm font-semibold text-slate-400">NiOS</p>
-                    <h1 class="mt-1 text-3xl font-semibold tracking-tight text-white">Analytics</h1>
+                    <h1 class="mt-1 text-3xl font-semibold tracking-tight text-white">Analyse</h1>
                     <p class="text-sm text-slate-500">Gedragsinzichten</p>
                 </div>
                 <nav class="space-y-1.5">
@@ -20,7 +20,7 @@
                 </nav>
             </div>
             <div class="rounded-2xl border border-white/5 bg-white/5 px-5 py-4 text-sm text-slate-200">
-                <p class="text-xs uppercase tracking-wide text-slate-400">Version</p>
+                <p class="text-xs uppercase tracking-wide text-slate-400">Versie</p>
                 <p class="text-lg font-semibold text-white">{{ version }}</p>
                 <p class="text-xs text-slate-400">v1.0.0 Beta</p>
                 <p class="text-xs text-slate-500 mt-1">stabiele build</p>
@@ -40,7 +40,7 @@
                                 {{ initials }}
                             </div>
                             <div>
-                                <p class="text-sm font-semibold">{{ user?.name ?? 'Analyst' }}</p>
+                                <p class="text-sm font-semibold">{{ user?.name ?? 'Analist' }}</p>
                                 <p class="text-xs text-slate-500">Gedrag</p>
                             </div>
                         </div>
@@ -66,10 +66,10 @@ const links = [
     { href: '/dashboard', label: 'Overzicht', icon: 'dashboard' },
     { href: '/sessions', label: 'Sessies', icon: 'sessions' },
     { href: '/events', label: 'Evenementen', icon: 'events' },
-    { href: '/timeline', label: 'User Timeline', icon: 'timeline' },
+    { href: '/timeline', label: 'Gebruikerstijdlijn', icon: 'timeline' },
     { href: '/search', label: 'Zoekopdrachten', icon: 'search' },
     { href: '/conversions', label: 'Conversies', icon: 'conversions' },
-    { href: '/heatmap', label: 'Heatmap', icon: 'heatmap' },
+    { href: '/heatmap', label: 'Warmtekaart', icon: 'heatmap' },
     { href: '/settings', label: 'Instellingen', icon: 'settings' },
 ];
 

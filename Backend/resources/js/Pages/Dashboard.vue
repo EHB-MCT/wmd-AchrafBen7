@@ -15,21 +15,21 @@
                         :class="compareMode ? 'border-sky-500 bg-sky-50 text-sky-700' : 'border-slate-200 text-slate-500'"
                         @click="compareMode = !compareMode"
                     >
-                        Compare range
+                        Vergelijk periode
                     </button>
                     <button
                         type="button"
                         class="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"
                         @click="downloadExport('csv')"
                     >
-                        Export CSV
+                        Exporteer CSV
                     </button>
                     <button
                         type="button"
                         class="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300"
                         @click="downloadExport('pdf')"
                     >
-                        Export PDF
+                        Exporteer PDF
                     </button>
                 </div>
                 <DateRangePicker v-model="selectedRange" />
@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
@@ -92,6 +92,15 @@ const fetchOverview = async () => {
 
 onMounted(fetchOverview);
 watch([selectedRange, compareMode], fetchOverview);
+let refreshTimer;
+onMounted(() => {
+    refreshTimer = setInterval(fetchOverview, 10000);
+});
+onBeforeUnmount(() => {
+    if (refreshTimer) {
+        clearInterval(refreshTimer);
+    }
+});
 
 const downloadExport = (format) => {
     window.open(`/api/export/kpis.${format}?range=${selectedRange.value}`, '_blank');

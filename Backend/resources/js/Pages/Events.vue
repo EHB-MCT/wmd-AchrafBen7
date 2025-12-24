@@ -12,7 +12,7 @@
                     :class="compareMode ? 'border-sky-500 bg-sky-50 text-sky-700' : 'border-slate-200 text-slate-500'"
                     @click="compareMode = !compareMode"
                 >
-                    Compare
+                    Vergelijk
                 </button>
                 <DateRangePicker v-model="selectedRange" />
             </div>
@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
@@ -89,6 +89,15 @@ const loadEvents = async () => {
 
 onMounted(loadEvents);
 watch([selectedRange, compareMode], loadEvents);
+let refreshTimer;
+onMounted(() => {
+    refreshTimer = setInterval(loadEvents, 10000);
+});
+onBeforeUnmount(() => {
+    if (refreshTimer) {
+        clearInterval(refreshTimer);
+    }
+});
 
 const datasets = computed(() => [
     {

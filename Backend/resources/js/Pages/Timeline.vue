@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
                 <p class="text-sm text-slate-500">Volledige gebruikersflow</p>
-                <h2 class="text-3xl font-semibold text-slate-900">User Timeline</h2>
+                <h2 class="text-3xl font-semibold text-slate-900">Gebruikerstijdlijn</h2>
             </div>
             <div class="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
                 <label class="flex items-center gap-2 text-sm text-slate-500">
@@ -21,7 +21,7 @@
         <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
             <div class="flex items-center justify-between">
                 <p class="text-lg font-semibold">Laatste activiteiten</p>
-                <p class="text-xs uppercase text-slate-400">{{ timelineEntries.length }} events</p>
+                <p class="text-xs uppercase text-slate-400">{{ timelineEntries.length }} gebeurtenissen</p>
             </div>
             <ol class="relative mt-6 border-l-2 border-slate-100 pl-6">
                 <li
@@ -125,11 +125,11 @@ const entryBadge = (kind, type) => {
         return 'Sessiestart';
     }
     if (kind === 'session_end') {
-        return 'Session end';
+        return 'Sessie einde';
     }
     if (type === 'conversion') {
-        return 'Conversion';
+        return 'Conversie';
     }
-    return type ?? 'Event';
+    return type ?? 'Gebeurtenis';
 };
 </script>

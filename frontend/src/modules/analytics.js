@@ -1,30 +1,75 @@
 import { API_BASE } from "../config/env.js";
+import { postJson } from "./apiClient.js";
 
 const SESSION_KEY = "nios_session_id";
 const SESSION_START_KEY = "nios_session_start";
-const USER_KEY = "nios_user_id";
+const USER_ID_KEY = "nios_user_id";
+const USER_UID_KEY = "nios_user_uid";
 
 export function initAnalytics() {
   const state = {
     sessionId: localStorage.getItem(SESSION_KEY),
     sessionStart: Number(localStorage.getItem(SESSION_START_KEY)) || Date.now(),
-    userId: localStorage.getItem(USER_KEY),
+    userId: localStorage.getItem(USER_ID_KEY),
+    userUid: localStorage.getItem(USER_UID_KEY),
+    ready: null,
+    retryTimer: null,
   };
 
-  if (!state.userId) {
-    state.userId = generateUUID();
-    localStorage.setItem(USER_KEY, state.userId);
+  if (!state.userUid) {
+    state.userUid = generateUUID();
+    localStorage.setItem(USER_UID_KEY, state.userUid);
   }
 
-  ensureSession(state).catch((error) => {
-    console.warn("NIOS analytics session start failed", error);
-  });
+  state.ready = bootstrap(state);
+  scheduleRetry(state);
 
   return {
     trackEvent: (type, name, value = {}, event) =>
       trackEvent(state, type, name, value, event),
     endSession: () => endSession(state),
+    getUserId: () => state.userId,
+    ready: state.ready,
   };
+}
+
+async function bootstrap(state) {
+  try {
+    await identifyUser(state);
+    await ensureSession(state);
+  } catch (error) {
+    console.warn("NIOS analytics bootstrap failed", error);
+  }
+}
+
+function scheduleRetry(state) {
+  if (state.retryTimer) {
+    return;
+  }
+
+  state.retryTimer = setInterval(() => {
+    if (!state.userId || !state.sessionId) {
+      bootstrap(state);
+    }
+  }, 10000);
+}
+
+async function identifyUser(state) {
+  if (state.userId) {
+    return;
+  }
+
+  const payload = await postJson("/api/users/identify", {
+    uid: state.userUid,
+    device_type: navigator.platform ?? null,
+    os_version: navigator.userAgent ?? null,
+    app_version: null,
+    locale: navigator.language ?? null,
+    country: null,
+  });
+
+  state.userId = payload.user_id;
+  localStorage.setItem(USER_ID_KEY, state.userId);
 }
 
 async function ensureSession(state) {
@@ -32,7 +77,7 @@ async function ensureSession(state) {
     return;
   }
 
-  const payload = await postJson(`${API_BASE}/api/sessions/start`, {
+  const payload = await postJson("/api/sessions/start", {
     user_id: state.userId,
     platform: "web",
     network_type: getNetworkType(),
@@ -48,6 +93,7 @@ async function ensureSession(state) {
 }
 
 async function trackEvent(state, type, name, value = {}, event) {
+  await state.ready;
   if (!state.sessionId) {
     return;
   }
@@ -55,7 +101,7 @@ async function trackEvent(state, type, name, value = {}, event) {
   const coords = getEventCoords(event);
 
   try {
-    await postJson(`${API_BASE}/api/events`, {
+    await postJson("/api/events", {
       session_id: state.sessionId,
       user_id: state.userId,
       type,
@@ -87,20 +133,6 @@ function endSession(state) {
 
   const blob = new Blob([payload], { type: "application/json" });
   navigator.sendBeacon(`${API_BASE}/api/sessions/end`, blob);
-}
-
-async function postJson(url, data) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-
-  return response.json();
 }
 
 function getEventCoords(event) {

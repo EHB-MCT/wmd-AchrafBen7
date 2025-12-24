@@ -8,9 +8,13 @@ const state = {
   filter: "offers",
   query: "",
   searchBound: false,
+  searchTimer: null,
   context: {
     trackEvent: () => {},
     openDetailerModal: () => {},
+    recordSearchQuery: () => {},
+    recordProviderView: () => {},
+    recordFunnelStep: () => {},
   },
 };
 
@@ -26,7 +30,7 @@ export function initServicesMap() {
 
   if (!MAPBOX_TOKEN) {
     container.classList.add("map-placeholder");
-    container.textContent = "Mapbox token manquant.";
+    container.textContent = "Mapbox-token ontbreekt.";
     return;
   }
 
@@ -84,6 +88,14 @@ function bindServicesSearch() {
   searchInput.addEventListener("input", (event) => {
     setServiceQuery(event.target.value);
     state.context.trackEvent("search", "services.query", { query: state.query });
+
+    if (state.searchTimer) {
+      clearTimeout(state.searchTimer);
+    }
+
+    state.searchTimer = setTimeout(() => {
+      state.context.recordSearchQuery(state.query, currentResultCount());
+    }, 400);
   });
 
   state.searchBound = true;
@@ -120,6 +132,7 @@ function updateServiceMarkers() {
         service: provider.service,
         rating: provider.rating,
       });
+      state.context.recordFunnelStep("Intenties", 2);
     });
 
     const marker = new mapboxgl.Marker(markerEl)
@@ -133,4 +146,9 @@ function updateServiceMarkers() {
   if (countEl) {
     countEl.textContent = filtered.length.toString();
   }
+}
+
+function currentResultCount() {
+  const visibleMarkers = state.markers.length;
+  return visibleMarkers;
 }

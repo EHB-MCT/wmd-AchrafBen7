@@ -1,95 +1,67 @@
-# iOS Analytics Integration Guide
+# Web Analytics Integratiegids (NIOS Frontend)
 
-## 1. Préparer l'environnement et charger les mock data
+## 1. Doel
 
-1. `cd Backend`
-2. Copier votre fichier d'environnement (`cp .env.example .env`) puis ajuster `DB_` si nécessaire.
-3. Installer les dépendances backend : `composer install` et `npm install && npm run build` si l'UI doit être recompilée.
-4. Lancer l'infrastructure (`docker compose up -d` à la racine du repo) ou votre stack locale.
-5. Appliquer le schéma + jeux de données réalistes : `php artisan migrate:fresh --seed`.
+Deze versie vervangt de iOS-integratie door een webinterface die het bestaande analytics-dashboard voedt. De map `frontend/` bevat een homepage die events naar de `/api/*`-endpoints van de Laravel-backend stuurt.
 
-La commande de seed appelle `MockAnalyticsSeeder` qui génère users, sessions, events, funnels, provider views et search queries cohérents. Les graphiques Vue consomment ensuite ces données via les endpoints `/api/stats/...`.
+## 2. Snel starten
 
-## 2. Endpoints utiles
+1. Start backend + infra: `docker compose up -d` in de repo-root.
+2. Start de Vite-frontend:
+   - `cd frontend`
+   - `npm install`
+   - `npm run dev`
 
-| Objectif | Méthode + Route | Payload/Réponse |
+> Configureer `frontend/.env` met `VITE_API_BASE` en `VITE_MAPBOX_TOKEN` voor je start.
+
+## 3. Gebruikte endpoints
+
+| Doel | Methode + Route | Payload/Response |
 | --- | --- | --- |
-| Démarrer une session utilisateur | `POST /api/sessions/start` | Body : `{ user_id: uuid, platform: 'iOS', network_type?: 'wifi', battery_level?: 80 }` → Retourne `{ session: { id, start_time, ... } }` |
-| Clôturer une session | `POST /api/sessions/end` | Body : `{ session_id: uuid, duration_seconds: 420 }` |
-| Tracer un évènement | `POST /api/events` | Body : `{ session_id, user_id?, type: 'click'|'view'|'conversion'|..., name: 'booking.completed', value?: {}, device_x?: 120, device_y?: 420, timestamp: ISO8601 }` |
-| Datas pour l'UI | `GET /api/stats/overview|events|sessions|search|conversions?range=24h|7d|30d&compare=1` | `compare=1` renvoie la période précédente pour activer le mode « Compare Range ». |
-| Heatmap interactions | `GET /api/stats/heatmap?range=24h` | Retourne la liste des points `(device_x/device_y)` + intensité pour dessiner la carte thermique. |
-| Timeline utilisateur | `GET /api/stats/timeline?user_id=<uuid>&range=7d` | Permet d'afficher un parcours complet (session_start → events → conversion). |
-| Export KPI | `GET /api/export/kpis.csv` / `GET /api/export/kpis.pdf` | Génère un export (CSV ou PDF) avec sessions, conversions, top pages, search performance. |
+| Identificeer gebruiker | `POST /api/users/identify` | Body: `{ uid, device_type?, os_version?, app_version?, locale?, country? }` → `{ user_id }` |
+| Start sessie | `POST /api/sessions/start` | Body: `{ user_id: uuid, platform: 'web', network_type?: 'wifi' }` → `{ session: { id, start_time, ... } }` |
+| Eindig sessie | `POST /api/sessions/end` | Body: `{ session_id: uuid, duration_seconds: 420 }` |
+| Event registreren | `POST /api/events` | Body: `{ session_id, user_id?, type: 'click'|'view'|'conversion'|..., name: 'cta.search', value?: {}, device_x?: 120, device_y?: 420, timestamp: ISO8601 }` |
+| Zoekopdracht registreren | `POST /api/search-queries` | Body: `{ user_id, query, result_count, timestamp }` |
+| Funnel stap registreren | `POST /api/funnels` | Body: `{ user_id, step, step_order, timestamp }` |
+| Provider view registreren | `POST /api/provider-views` | Body: `{ user_id, provider_id, view_duration, timestamp }` |
+| Dashboard data | `GET /api/stats/overview|events|sessions|search|conversions?range=24h|7d|30d&compare=1` | `compare=1` geeft vorige periode |
+| Heatmap data | `GET /api/stats/heatmap?range=24h` | Retourneert `(device_x/device_y)` |
+| Tijdlijn | `GET /api/stats/timeline?user_id=<uuid>&range=7d` | Volledige user journey |
+| KPI export | `GET /api/export/kpis.csv` / `GET /api/export/kpis.pdf` | CSV of PDF export |
 
-> Tous les timestamps attendent un format ISO 8601 (`Date().ISO8601Format()` côté Swift) afin que Carbon puisse les parser.
+## 4. JS voorbeeld (frontend)
 
-## 3. Exemple Swift léger
+```js
+const API_BASE = "http://localhost:8100";
+const session = await fetch(`${API_BASE}/api/sessions/start`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ user_id, platform: "web" }),
+}).then((res) => res.json());
 
-```swift
-struct AnalyticsClient {
-    let baseURL = URL(string: "https://analytics.nios.app")!
-    let decoder = JSONDecoder()
-
-    func startSession(userId: UUID, platform: String = "iOS") async throws -> UUID {
-        var request = URLRequest(url: baseURL.appending(path: "/api/sessions/start"))
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = [
-            "user_id": userId.uuidString,
-            "platform": platform,
-            "network_type": "5g",
-            "battery_level": 90
-        ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, _) = try await URLSession.shared.data(for: request)
-        let payload = try decoder.decode(StartSessionResponse.self, from: data)
-        return payload.session.id
-    }
-
-    func trackEvent(_ event: AnalyticsEvent, sessionId: UUID, userId: UUID?) async throws {
-        var request = URLRequest(url: baseURL.appending(path: "/api/events"))
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any?] = [
-            "session_id": sessionId.uuidString,
-            "user_id": userId?.uuidString,
-            "type": event.type,
-            "name": event.name,
-            "value": event.metadata,
-            "device_x": event.position?.x,
-            "device_y": event.position?.y,
-            "timestamp": ISO8601DateFormatter().string(from: Date())
-        ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body.compactMapValues { $0 })
-        _ = try await URLSession.shared.data(for: request)
-    }
-
-    func endSession(id: UUID, duration: Int) async throws {
-        var request = URLRequest(url: baseURL.appending(path: "/api/sessions/end"))
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONSerialization.data(withJSONObject: [
-            "session_id": id.uuidString,
-            "duration_seconds": duration
-        ])
-        _ = try await URLSession.shared.data(for: request)
-    }
-}
+await fetch(`${API_BASE}/api/events`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    session_id: session.session.id,
+    user_id,
+    type: "click",
+    name: "cta.search",
+    value: { page: "home" },
+    device_x: 240,
+    device_y: 640,
+    timestamp: new Date().toISOString(),
+  }),
+});
 ```
 
-`AnalyticsEvent` peut encapsuler `type`, `name`, `metadata` (payload libre) et optionnellement la position (pour la heatmap). Dans votre application :
+## 5. Events vanuit `frontend/`
 
-1. Appelez `startSession` à l'ouverture de l'app et conservez l'`id` en mémoire.
-2. À chaque interaction notable (vue d'écran, tap sur CTA, recherche, réservation), appelez `trackEvent` avec un `timestamp` précis.
-3. Lorsque l'utilisateur quitte ou passe en background prolongé, appelez `endSession` et transmettez la durée réelle.
+- Sidebar navigatie (`nav.*`)
+- Hero CTA's (`cta.search`, `cta.offer`)
+- Service filters (`filter.*`)
+- Reserveringen (`book.*`)
+- Eerste page view (`page.home`)
 
-En gardant le même `session_id` pour toute la durée d'utilisation (ou jusqu'à expiration), les tableaux de bord web reflètent en quasi temps réel les comportements captés sur iOS.
-
-## 4. Nouveautés côté dashboard
-
-- **Heatmap d'interaction** : les événements envoyés avec `device_x` / `device_y` alimentent `/api/stats/heatmap`. Chaque `POST /api/events` contenant ces valeurs positionne un point dans la vue Heatmap.
-- **User Timeline** : en envoyant `session_id` cohérent + `type`/`name`, l'endpoint `/api/stats/timeline` reconstitue automatiquement `session_start → view → click → scroll → conversion`.
-- **Export KPI** : utilisez les routes `/api/export/kpis.csv|pdf` avec `?range=30d` pour récupérer un snapshot offline (utile pour reporting hebdo ou mobile share sheet).
-- **Compare Range** : tous les endpoints `overview/events/sessions` acceptent `compare=1` pour superposer la période précédente. Sur iOS, vous pouvez réutiliser ces données pour afficher des badges « vs last week ».
+Deze interacties voeden sessies, events, heatmap, funnel en zoekstatistieken.

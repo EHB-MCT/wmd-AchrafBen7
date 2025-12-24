@@ -3,30 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Funnel;
+use App\Models\SearchQuery;
 use Illuminate\Http\Request;
 
-class FunnelController extends Controller
+class SearchQueryController extends Controller
 {
     public function store(Request $request)
     {
         $data = $request->validate([
             'user_id' => 'required|uuid',
-            'step' => 'required|string|max:255',
-            'step_order' => 'required|integer|min:1',
+            'query' => 'required|string|max:255',
+            'result_count' => 'nullable|integer|min:0',
             'timestamp' => 'required|date',
         ]);
 
-        $funnel = Funnel::create($data);
+        $query = SearchQuery::create($data);
 
         return response()->json([
             'status' => 'opgeslagen',
-            'id' => $funnel->id,
+            'id' => $query->id,
         ]);
-    }
-
-    public function index()
-    {
-        return Funnel::orderBy('created_at', 'desc')->get();
     }
 }

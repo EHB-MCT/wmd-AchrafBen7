@@ -2,17 +2,17 @@
     <div class="space-y-6">
         <div>
             <p class="text-sm text-slate-500">Zie waar gebruikers klikken en scrollen</p>
-            <h2 class="text-3xl font-semibold text-slate-900">Heatmap</h2>
+            <h2 class="text-3xl font-semibold text-slate-900">Warmtekaart</h2>
         </div>
 
         <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <p class="text-lg font-semibold">Live heatmap</p>
+                    <p class="text-lg font-semibold">Live warmtekaart</p>
                     <p class="text-sm text-slate-500">Interacties gebaseerd op device_x / device_y</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <FilterChip label="Mobile" value="mobile" :model-value="'mobile'" :active="true" />
+                    <FilterChip label="Mobiel" value="mobile" :model-value="'mobile'" :active="true" />
                     <DateRangePicker v-model="selectedRange" :presets="heatmapRanges" />
                 </div>
             </div>
@@ -102,13 +102,18 @@ const hotspots = computed(() => {
         .slice(0, 4);
 });
 
+let refreshTimer;
 onMounted(() => {
     loadHeatmap();
     window.addEventListener('resize', drawHeatmap);
+    refreshTimer = setInterval(loadHeatmap, 10000);
 });
 
 onBeforeUnmount(() => {
     window.removeEventListener('resize', drawHeatmap);
+    if (refreshTimer) {
+        clearInterval(refreshTimer);
+    }
 });
 
 watch(selectedRange, loadHeatmap);

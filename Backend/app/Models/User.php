@@ -13,14 +13,18 @@ class User extends Authenticatable
 
     protected $fillable = [
         'id',
-        'email',
-        'device_model',
+        'uid',
+        'device_type',
         'os_version',
         'app_version',
+        'locale',
+        'country',
+        'first_seen_at',
         'last_seen_at',
     ];
 
     protected $casts = [
+        'first_seen_at' => 'datetime',
         'last_seen_at' => 'datetime',
     ];
 

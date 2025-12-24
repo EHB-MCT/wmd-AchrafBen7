@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>NIOS - Marketplace Car Detailing</title>
+    <title>NIOS - Autodetailing Marktplaats</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Sora:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -18,45 +18,45 @@
           <div class="brand-mark">N</div>
           <div>
             <p class="brand-name">NIOS</p>
-            <p class="brand-sub">Car detailing network</p>
+            <p class="brand-sub">Autodetailing netwerk</p>
           </div>
         </div>
 
         <nav class="nav">
           <button class="nav-link is-active" data-event="nav.home" data-view="home">
-            Accueil
+            Start
           </button>
           <button class="nav-link" data-event="nav.services" data-view="services">
-            Services
+            Diensten
           </button>
           <button class="nav-link" data-event="nav.activity" data-view="activity">
-            Activite
+            Activiteit
           </button>
           <button class="nav-link" data-event="nav.notifications" data-view="notifications">
-            Notifications
+            Meldingen
           </button>
 
           <p class="nav-section">Dashboards</p>
-          <button class="nav-link" data-event="nav.space">Mon espace</button>
-          <button class="nav-link" data-event="nav.provider">Prestataire</button>
-          <button class="nav-link" data-event="nav.business">Entreprise</button>
+          <button class="nav-link" data-event="nav.space">Mijn ruimte</button>
+          <button class="nav-link" data-event="nav.provider">Dienstverlener</button>
+          <button class="nav-link" data-event="nav.business">Bedrijf</button>
         </nav>
 
         <div class="nav-footer">
-          <button class="nav-link" data-event="nav.settings">Parametres</button>
-          <button class="nav-link" data-event="nav.account">Mon compte</button>
-          <button class="nav-link danger" data-event="nav.logout">Deconnexion</button>
+          <button class="nav-link" data-event="nav.settings">Instellingen</button>
+          <button class="nav-link" data-event="nav.account">Mijn account</button>
+          <button class="nav-link danger" data-event="nav.logout">Uitloggen</button>
         </div>
       </aside>
 
       <main class="content">
         <header class="topbar">
-          <button class="icon-btn" data-event="top.menu" aria-label="Ouvrir le menu">
+          <button class="icon-btn" data-event="top.menu" aria-label="Menu openen">
             <span></span>
             <span></span>
           </button>
           <div class="top-actions">
-            <button class="icon-btn" data-event="top.notifications" aria-label="Notifications">
+            <button class="icon-btn" data-event="top.notifications" aria-label="Meldingen">
               <span class="dot"></span>
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path
@@ -65,54 +65,53 @@
                 <path d="M9.5 18a2.5 2.5 0 0 0 5 0" />
               </svg>
             </button>
-            <button class="avatar" data-event="top.profile">AB</button>
           </div>
         </header>
 
         <section class="promo" data-view-section="home" data-display="flex">
           <div class="promo-inner">
-            <p class="promo-title">Nouveau client ? -10€</p>
-            <p class="promo-sub">Sur votre premiere reservation</p>
+            <p class="promo-title">Nieuwe klant? -€10</p>
+            <p class="promo-sub">Op je eerste reservering</p>
           </div>
-          <button class="promo-close" data-event="promo.close" aria-label="Fermer">×</button>
+          <button class="promo-close" data-event="promo.close" aria-label="Sluiten">×</button>
         </section>
 
         <section class="hero" data-view-section="home" data-display="block">
           <div class="hero-overlay">
-            <p class="hero-eyebrow">NIOS Marketplace</p>
-            <h1>Votre voiture merite le meilleur</h1>
+            <p class="hero-eyebrow">NIOS Marktplaats</p>
+            <h1>Jouw auto verdient het beste</h1>
             <p>
-              Services de detailing premium, reservation rapide, paiement securise, et des
-              prestataires verifies.
+              Premium detailing in de buurt, snel reserveren, veilig betalen en
+              geverifieerde dienstverleners.
             </p>
             <div class="hero-actions">
-              <button class="btn primary" data-event="cta.search">Trouver un detailer</button>
-              <button class="btn ghost" data-event="cta.offer">Devenir prestataire</button>
+              <button class="btn primary" data-event="cta.search">Zoek een detailer</button>
+              <button class="btn ghost" data-event="cta.offer">Word dienstverlener</button>
             </div>
           </div>
         </section>
 
         <section class="filters" data-view-section="home" data-display="flex">
-          <button class="pill is-active" data-event="filter.all" data-filter="all">Tous</button>
+          <button class="pill is-active" data-event="filter.all" data-filter="all">Alles</button>
           <button class="pill" data-event="filter.polish" data-filter="polish">
-            Polissage
+            Polijsten
           </button>
           <button class="pill" data-event="filter.ceramic" data-filter="ceramic">
-            Ceramique
+            Keramiek
           </button>
           <button class="pill" data-event="filter.interior" data-filter="interior">
             Interieur
           </button>
-          <button class="pill" data-event="filter.wash" data-filter="wash">Lavage</button>
+          <button class="pill" data-event="filter.wash" data-filter="wash">Wassen</button>
           <button class="pill icon" data-event="filter.more" data-filter="more">
             <span class="filter-icon">≡</span>
-            Filtres
+            Filters
           </button>
         </section>
 
         <section class="section-header" data-view-section="home" data-display="flex">
-          <h2>A proximite</h2>
-          <button class="ghost-link" data-event="section.more">Voir tout →</button>
+          <h2>In de buurt</h2>
+          <button class="ghost-link" data-event="section.more">Alles bekijken →</button>
         </section>
 
         <section class="cards" data-view-section="home" data-display="grid">
@@ -126,10 +125,10 @@
             <div class="card-body">
               <span class="rating">★ 4.8</span>
               <h3>DetailPro Brussels</h3>
-              <p>Polissage complet</p>
+              <p>Volledig polijsten</p>
               <div class="card-footer">
-                <span>Disponible sous 24h</span>
-                <button class="btn small" data-event="book.detailpro">Reserver</button>
+                <span>Binnen 24u beschikbaar</span>
+                <button class="btn small" data-event="book.detailpro">Reserveren</button>
               </div>
             </div>
           </article>
@@ -144,10 +143,10 @@
             <div class="card-body">
               <span class="rating">★ 4.9</span>
               <h3>Shine Masters</h3>
-              <p>Protection ceramique</p>
+              <p>Keramische bescherming</p>
               <div class="card-footer">
-                <span>Disponible demain</span>
-                <button class="btn small" data-event="book.shine">Reserver</button>
+                <span>Morgen beschikbaar</span>
+                <button class="btn small" data-event="book.shine">Reserveren</button>
               </div>
             </div>
           </article>
@@ -162,10 +161,10 @@
             <div class="card-body">
               <span class="rating">★ 4.7</span>
               <h3>Auto Perfection</h3>
-              <p>Nettoyage interieur</p>
+              <p>Interieurreiniging</p>
               <div class="card-footer">
-                <span>Distance 2.1 km</span>
-                <button class="btn small" data-event="book.auto">Reserver</button>
+                <span>Afstand 2,1 km</span>
+                <button class="btn small" data-event="book.auto">Reserveren</button>
               </div>
             </div>
           </article>
@@ -180,10 +179,10 @@
             <div class="card-body">
               <span class="rating">★ 4.6</span>
               <h3>Wash Pro</h3>
-              <p>Lavage premium</p>
+              <p>Premium wasbeurt</p>
               <div class="card-footer">
-                <span>Distance 3.4 km</span>
-                <button class="btn small" data-event="book.washpro">Reserver</button>
+                <span>Afstand 3,4 km</span>
+                <button class="btn small" data-event="book.washpro">Reserveren</button>
               </div>
             </div>
           </article>
@@ -196,8 +195,8 @@
                 <span class="search-icon">🔍</span>
                 <input
                   type="text"
-                  placeholder="Service, ville..."
-                  aria-label="Recherche services"
+                  placeholder="Dienst, stad..."
+                  aria-label="Zoek diensten"
                   data-services-search
                 />
               </div>
@@ -209,22 +208,22 @@
 
             <div class="map-filters">
               <button class="chip is-active" data-services-filter="offers" data-event="filter.offers">
-                Offres
+                Aanbiedingen
               </button>
-              <button class="chip" data-services-filter="price" data-event="filter.price">Prix</button>
+              <button class="chip" data-services-filter="price" data-event="filter.price">Prijs</button>
               <button
                 class="chip"
                 data-services-filter="home"
                 data-event="filter.home"
               >
-                A domicile
+                Aan huis
               </button>
               <button
                 class="chip"
                 data-services-filter="top"
                 data-event="filter.top"
               >
-                Mieux notes
+                Best beoordeeld
               </button>
               <button
                 class="chip"
@@ -238,13 +237,13 @@
                 data-services-filter="express"
                 data-event="filter.express"
               >
-                Livraison rapide
+                Snelle service
               </button>
             </div>
 
-            <div id="services-map" class="map-surface" aria-label="Carte services"></div>
+            <div id="services-map" class="map-surface" aria-label="Services kaart"></div>
             <div class="map-legend">
-              <span>Detailers actifs</span>
+              <span>Actieve detailers</span>
               <span class="legend-dot"></span>
               <span class="legend-text" data-services-count>4</span>
             </div>
@@ -252,37 +251,37 @@
         </section>
 
         <section class="page activity" data-view-section="activity" data-display="block">
-          <h2>Activite recente</h2>
+          <h2>Recente activiteit</h2>
           <div class="timeline">
             <div class="timeline-item">
-              <span class="time">Il y a 2 min</span>
-              <p>Vous avez consulte Shine Masters.</p>
+              <span class="time">2 min geleden</span>
+              <p>Je bekeek Shine Masters.</p>
             </div>
             <div class="timeline-item">
-              <span class="time">Il y a 12 min</span>
-              <p>Nouveau devis propose par DetailPro Brussels.</p>
+              <span class="time">12 min geleden</span>
+              <p>Nieuwe offerte van DetailPro Brussels.</p>
             </div>
             <div class="timeline-item">
-              <span class="time">Hier</span>
-              <p>Reservation confirme pour un lavage premium.</p>
+              <span class="time">Gisteren</span>
+              <p>Reservering bevestigd voor een premium wasbeurt.</p>
             </div>
           </div>
         </section>
 
         <section class="page notifications" data-view-section="notifications" data-display="block">
-          <h2>Notifications</h2>
+          <h2>Meldingen</h2>
           <div class="notification-list">
             <div class="notification">
-              <p>Promo -10€ valable jusqu'a dimanche.</p>
-              <button class="ghost-link" data-event="notif.view">Voir</button>
+              <p>Actie -€10 geldig tot zondag.</p>
+              <button class="ghost-link" data-event="notif.view">Bekijk</button>
             </div>
             <div class="notification">
-              <p>Auto Perfection vient de se liberer pres de chez vous.</p>
-              <button class="ghost-link" data-event="notif.book">Reserver</button>
+              <p>Auto Perfection is nu beschikbaar bij jou in de buurt.</p>
+              <button class="ghost-link" data-event="notif.book">Reserveren</button>
             </div>
             <div class="notification">
-              <p>Nouveau prestataire rejoint NIOS a Bruxelles.</p>
-              <button class="ghost-link" data-event="notif.profile">Profil</button>
+              <p>Nieuwe dienstverlener toegevoegd in Brussel.</p>
+              <button class="ghost-link" data-event="notif.profile">Profiel</button>
             </div>
           </div>
         </section>
@@ -292,15 +291,15 @@
     <div class="modal" id="detailer-modal" aria-hidden="true">
       <div class="modal-card">
         <button class="modal-close" data-event="detailer.close">×</button>
-        <h3 id="detailer-name">Detailer</h3>
-        <p id="detailer-service">Service</p>
+        <h3 id="detailer-name">Dienstverlener</h3>
+        <p id="detailer-service">Dienst</p>
         <p id="detailer-rating" class="detailer-rating">★ 4.8</p>
         <p class="detailer-desc">
-          Reservation simple, paiement securise et disponibilite immediate.
+          Eenvoudig reserveren, veilig betalen en directe beschikbaarheid.
         </p>
         <div class="modal-actions">
-          <button class="btn primary" data-event="detailer.book">Reserver</button>
-          <button class="btn ghost" data-event="detailer.message">Message</button>
+          <button class="btn primary" data-event="detailer.book">Reserveren</button>
+          <button class="btn ghost" data-event="detailer.message">Bericht</button>
         </div>
       </div>
     </div>

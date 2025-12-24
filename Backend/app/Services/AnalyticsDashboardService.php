@@ -61,10 +61,6 @@ class AnalyticsDashboardService
             ];
         })->all();
 
-        if ($sessionCount === 0 && $eventCount === 0) {
-            return $this->mockOverview();
-        }
-
         $kpis = [
             [
                 'label' => 'Actieve sessies',
@@ -121,7 +117,7 @@ class AnalyticsDashboardService
         }
 
         if (empty($realtime)) {
-            $realtime = $this->mockRealtime();
+            $realtime = [];
         }
 
         return new OverviewDTO($kpis, $activity, $realtime, $comparison);
@@ -142,10 +138,6 @@ class AnalyticsDashboardService
         $totals['conversion_rate'] = $totals['unique_sessions'] > 0
             ? round(($totals['conversions'] / $totals['unique_sessions']) * 100, 1)
             : 0;
-
-        if ($totals['weekly'] === 0) {
-            return $this->mockEventsStats();
-        }
 
         $comparison = null;
 
@@ -195,9 +187,9 @@ class AnalyticsDashboardService
         $recentSessions = $this->sessions->recent()->map(function ($session) {
             return [
                 'id' => $session->id,
-                'user' => $session->user?->name ?? 'Utilisateur',
+                'user' => $session->user?->name ?? 'Gebruiker',
                 'started_at' => optional($session->start_time)?->diffForHumans(),
-                'platform' => $session->platform ?? 'Unknown',
+                'platform' => $session->platform ?? 'Onbekend',
                 'duration' => $this->formatDuration((int) $session->duration_seconds),
             ];
         })->all();
@@ -207,10 +199,6 @@ class AnalyticsDashboardService
             'weekly' => $this->sessions->countBetween($start, $now),
             'average_duration' => $this->formatDuration($this->sessions->averageDuration($start, $now)),
         ];
-
-        if ($totals['weekly'] === 0) {
-            return $this->mockSessionsStats();
-        }
 
         $comparison = null;
 
@@ -262,7 +250,16 @@ class AnalyticsDashboardService
             ->get();
 
         if ($points->isEmpty()) {
-            return $this->mockHeatmap();
+            return [
+                'points' => [],
+                'meta' => [
+                    'total_events' => 0,
+                    'max_intensity' => 0,
+                    'max_x' => 0,
+                    'max_y' => 0,
+                    'range' => $range,
+                ],
+            ];
         }
 
         $maxX = max(1, (int) $points->max('device_x'));
@@ -302,7 +299,12 @@ class AnalyticsDashboardService
         }
 
         if (! $userId) {
-            return $this->mockTimeline($users);
+            return [
+                'users' => $users,
+                'active_user' => null,
+                'entries' => [],
+                'range' => $range,
+            ];
         }
 
         $sessions = UserSession::with(['events' => function ($query) use ($start, $end) {
@@ -361,10 +363,6 @@ class AnalyticsDashboardService
             'range' => $range,
         ];
 
-        if (empty($entries)) {
-            return $this->mockTimeline($users);
-        }
-
         return $payload;
     }
 
@@ -405,10 +403,6 @@ class AnalyticsDashboardService
             'conversions' => $conversions,
             'top_conversion_pages' => $conversionPages,
         ];
-
-        if ($overviewKpis['sessions'] === 0 && $overviewKpis['events'] === 0) {
-            return $this->mockKpiSnapshot($range);
-        }
 
         return $snapshot;
     }
@@ -466,10 +460,6 @@ class AnalyticsDashboardService
             ],
         ];
 
-        if ($total === 0) {
-            return $this->mockSearch();
-        }
-
         return $response;
     }
 
@@ -523,10 +513,6 @@ class AnalyticsDashboardService
                 'rate' => $stage['rate'],
             ])->all(),
         ];
-
-        if (array_sum($totals) === 0) {
-            return $this->mockConversions();
-        }
 
         return $result;
     }
