@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NIOS - Marketplace Car Detailing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">N</div>
+          <div>
+            <p class="brand-name">NIOS</p>
+            <p class="brand-sub">Car detailing network</p>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-link is-active" data-event="nav.home">Accueil</button>
+          <button class="nav-link" data-event="nav.services">Services</button>
+          <button class="nav-link" data-event="nav.activity">Activite</button>
+          <button class="nav-link" data-event="nav.notifications">Notifications</button>
+
+          <p class="nav-section">Dashboards</p>
+          <button class="nav-link" data-event="nav.space">Mon espace</button>
+          <button class="nav-link" data-event="nav.provider">Prestataire</button>
+          <button class="nav-link" data-event="nav.business">Entreprise</button>
+        </nav>
+
+        <div class="nav-footer">
+          <button class="nav-link" data-event="nav.settings">Parametres</button>
+          <button class="nav-link" data-event="nav.account">Mon compte</button>
+          <button class="nav-link danger" data-event="nav.logout">Deconnexion</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <button class="icon-btn" data-event="top.menu" aria-label="Ouvrir le menu">
+            <span></span>
+            <span></span>
+          </button>
+          <div class="top-actions">
+            <button class="icon-btn" data-event="top.notifications" aria-label="Notifications">
+              <span class="dot"></span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 3a5 5 0 0 0-5 5v3.2l-1.6 2.7A1 1 0 0 0 6.3 16h11.4a1 1 0 0 0 .9-1.5L17 11.2V8a5 5 0 0 0-5-5Z"
+                />
+                <path d="M9.5 18a2.5 2.5 0 0 0 5 0" />
+              </svg>
+            </button>
+            <button class="avatar" data-event="top.profile">AB</button>
+          </div>
+        </header>
+
+        <section class="promo">
+          <div class="promo-inner">
+            <p class="promo-title">Nouveau client ? -10€</p>
+            <p class="promo-sub">Sur votre premiere reservation</p>
+          </div>
+          <button class="promo-close" data-event="promo.close" aria-label="Fermer">×</button>
+        </section>
+
+        <section class="hero">
+          <div class="hero-overlay">
+            <p class="hero-eyebrow">NIOS Marketplace</p>
+            <h1>Votre voiture merite le meilleur</h1>
+            <p>
+              Services de detailing premium, reservation rapide, paiement securise, et des
+              prestataires verifies.
+            </p>
+            <div class="hero-actions">
+              <button class="btn primary" data-event="cta.search">Trouver un detailer</button>
+              <button class="btn ghost" data-event="cta.offer">Devenir prestataire</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="filters">
+          <button class="pill is-active" data-event="filter.all">Tous</button>
+          <button class="pill" data-event="filter.polish">Polissage</button>
+          <button class="pill" data-event="filter.ceramic">Ceramique</button>
+          <button class="pill" data-event="filter.interior">Interieur</button>
+          <button class="pill" data-event="filter.wash">Lavage</button>
+          <button class="pill icon" data-event="filter.more">
+            <span class="filter-icon">≡</span>
+            Filtres
+          </button>
+        </section>
+
+        <section class="section-header">
+          <h2>A proximite</h2>
+          <button class="ghost-link" data-event="section.more">Voir tout →</button>
+        </section>
+
+        <section class="cards">
+          <article class="card" data-provider="DetailPro Brussels">
+            <div class="card-media"></div>
+            <div class="card-body">
+              <span class="rating">★ 4.8</span>
+              <h3>DetailPro Brussels</h3>
+              <p>Polissage complet</p>
+              <div class="card-footer">
+                <span>Disponible sous 24h</span>
+                <button class="btn small" data-event="book.detailpro">Reserver</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-provider="Shine Masters">
+            <div class="card-media alt-1"></div>
+            <div class="card-body">
+              <span class="rating">★ 4.9</span>
+              <h3>Shine Masters</h3>
+              <p>Protection ceramique</p>
+              <div class="card-footer">
+                <span>Disponible demain</span>
+                <button class="btn small" data-event="book.shine">Reserver</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-provider="Auto Perfection">
+            <div class="card-media alt-2"></div>
+            <div class="card-body">
+              <span class="rating">★ 4.7</span>
+              <h3>Auto Perfection</h3>
+              <p>Nettoyage interieur</p>
+              <div class="card-footer">
+                <span>Distance 2.1 km</span>
+                <button class="btn small" data-event="book.auto">Reserver</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-provider="Wash Pro">
+            <div class="card-media alt-3"></div>
+            <div class="card-body">
+              <span class="rating">★ 4.6</span>
+              <h3>Wash Pro</h3>
+              <p>Lavage premium</p>
+              <div class="card-footer">
+                <span>Distance 3.4 km</span>
+                <button class="btn small" data-event="book.washpro">Reserver</button>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
