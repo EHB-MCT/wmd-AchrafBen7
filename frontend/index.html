@@ -10,6 +10,10 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -24,10 +28,18 @@
         </div>
 
         <nav class="nav">
-          <button class="nav-link is-active" data-event="nav.home">Accueil</button>
-          <button class="nav-link" data-event="nav.services">Services</button>
-          <button class="nav-link" data-event="nav.activity">Activite</button>
-          <button class="nav-link" data-event="nav.notifications">Notifications</button>
+          <button class="nav-link is-active" data-event="nav.home" data-view="home">
+            Accueil
+          </button>
+          <button class="nav-link" data-event="nav.services" data-view="services">
+            Services
+          </button>
+          <button class="nav-link" data-event="nav.activity" data-view="activity">
+            Activite
+          </button>
+          <button class="nav-link" data-event="nav.notifications" data-view="notifications">
+            Notifications
+          </button>
 
           <p class="nav-section">Dashboards</p>
           <button class="nav-link" data-event="nav.space">Mon espace</button>
@@ -62,7 +74,7 @@
           </div>
         </header>
 
-        <section class="promo">
+        <section class="promo" data-view-section="home" data-display="flex">
           <div class="promo-inner">
             <p class="promo-title">Nouveau client ? -10€</p>
             <p class="promo-sub">Sur votre premiere reservation</p>
@@ -70,7 +82,7 @@
           <button class="promo-close" data-event="promo.close" aria-label="Fermer">×</button>
         </section>
 
-        <section class="hero">
+        <section class="hero" data-view-section="home" data-display="block">
           <div class="hero-overlay">
             <p class="hero-eyebrow">NIOS Marketplace</p>
             <h1>Votre voiture merite le meilleur</h1>
@@ -85,25 +97,36 @@
           </div>
         </section>
 
-        <section class="filters">
-          <button class="pill is-active" data-event="filter.all">Tous</button>
-          <button class="pill" data-event="filter.polish">Polissage</button>
-          <button class="pill" data-event="filter.ceramic">Ceramique</button>
-          <button class="pill" data-event="filter.interior">Interieur</button>
-          <button class="pill" data-event="filter.wash">Lavage</button>
-          <button class="pill icon" data-event="filter.more">
+        <section class="filters" data-view-section="home" data-display="flex">
+          <button class="pill is-active" data-event="filter.all" data-filter="all">Tous</button>
+          <button class="pill" data-event="filter.polish" data-filter="polish">
+            Polissage
+          </button>
+          <button class="pill" data-event="filter.ceramic" data-filter="ceramic">
+            Ceramique
+          </button>
+          <button class="pill" data-event="filter.interior" data-filter="interior">
+            Interieur
+          </button>
+          <button class="pill" data-event="filter.wash" data-filter="wash">Lavage</button>
+          <button class="pill icon" data-event="filter.more" data-filter="more">
             <span class="filter-icon">≡</span>
             Filtres
           </button>
         </section>
 
-        <section class="section-header">
+        <section class="section-header" data-view-section="home" data-display="flex">
           <h2>A proximite</h2>
           <button class="ghost-link" data-event="section.more">Voir tout →</button>
         </section>
 
-        <section class="cards">
-          <article class="card" data-provider="DetailPro Brussels">
+        <section class="cards" data-view-section="home" data-display="grid">
+          <article
+            class="card"
+            data-provider="DetailPro Brussels"
+            data-category="polish"
+            data-rating="4.8"
+          >
             <div class="card-media"></div>
             <div class="card-body">
               <span class="rating">★ 4.8</span>
@@ -116,7 +139,12 @@
             </div>
           </article>
 
-          <article class="card" data-provider="Shine Masters">
+          <article
+            class="card"
+            data-provider="Shine Masters"
+            data-category="ceramic"
+            data-rating="4.9"
+          >
             <div class="card-media alt-1"></div>
             <div class="card-body">
               <span class="rating">★ 4.9</span>
@@ -129,7 +157,12 @@
             </div>
           </article>
 
-          <article class="card" data-provider="Auto Perfection">
+          <article
+            class="card"
+            data-provider="Auto Perfection"
+            data-category="interior"
+            data-rating="4.7"
+          >
             <div class="card-media alt-2"></div>
             <div class="card-body">
               <span class="rating">★ 4.7</span>
@@ -142,7 +175,12 @@
             </div>
           </article>
 
-          <article class="card" data-provider="Wash Pro">
+          <article
+            class="card"
+            data-provider="Wash Pro"
+            data-category="wash"
+            data-rating="4.6"
+          >
             <div class="card-media alt-3"></div>
             <div class="card-body">
               <span class="rating">★ 4.6</span>
@@ -155,9 +193,124 @@
             </div>
           </article>
         </section>
+
+        <section class="page services" data-view-section="services" data-display="block">
+          <div class="map-card">
+            <div class="map-search">
+              <div class="search-field">
+                <span class="search-icon">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Service, ville..."
+                  aria-label="Recherche services"
+                  data-services-search
+                />
+              </div>
+              <button class="icon-btn" data-event="services.filter">
+                <span></span>
+                <span></span>
+              </button>
+            </div>
+
+            <div class="map-filters">
+              <button class="chip is-active" data-services-filter="offers" data-event="filter.offers">
+                Offres
+              </button>
+              <button class="chip" data-services-filter="price" data-event="filter.price">Prix</button>
+              <button
+                class="chip"
+                data-services-filter="home"
+                data-event="filter.home"
+              >
+                A domicile
+              </button>
+              <button
+                class="chip"
+                data-services-filter="top"
+                data-event="filter.top"
+              >
+                Mieux notes
+              </button>
+              <button
+                class="chip"
+                data-services-filter="distance"
+                data-event="filter.distance"
+              >
+                Distance
+              </button>
+              <button
+                class="chip"
+                data-services-filter="express"
+                data-event="filter.express"
+              >
+                Livraison rapide
+              </button>
+            </div>
+
+            <div id="services-map" class="map-surface" aria-label="Carte services"></div>
+            <div class="map-legend">
+              <span>Detailers actifs</span>
+              <span class="legend-dot"></span>
+              <span class="legend-text" data-services-count>4</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="page activity" data-view-section="activity" data-display="block">
+          <h2>Activite recente</h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <span class="time">Il y a 2 min</span>
+              <p>Vous avez consulte Shine Masters.</p>
+            </div>
+            <div class="timeline-item">
+              <span class="time">Il y a 12 min</span>
+              <p>Nouveau devis propose par DetailPro Brussels.</p>
+            </div>
+            <div class="timeline-item">
+              <span class="time">Hier</span>
+              <p>Reservation confirme pour un lavage premium.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="page notifications" data-view-section="notifications" data-display="block">
+          <h2>Notifications</h2>
+          <div class="notification-list">
+            <div class="notification">
+              <p>Promo -10€ valable jusqu'a dimanche.</p>
+              <button class="ghost-link" data-event="notif.view">Voir</button>
+            </div>
+            <div class="notification">
+              <p>Auto Perfection vient de se liberer pres de chez vous.</p>
+              <button class="ghost-link" data-event="notif.book">Reserver</button>
+            </div>
+            <div class="notification">
+              <p>Nouveau prestataire rejoint NIOS a Bruxelles.</p>
+              <button class="ghost-link" data-event="notif.profile">Profil</button>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
 
+    <div class="modal" id="detailer-modal" aria-hidden="true">
+      <div class="modal-card">
+        <button class="modal-close" data-event="detailer.close">×</button>
+        <h3 id="detailer-name">Detailer</h3>
+        <p id="detailer-service">Service</p>
+        <p id="detailer-rating" class="detailer-rating">★ 4.8</p>
+        <p class="detailer-desc">
+          Reservation simple, paiement securise et disponibilite immediate.
+        </p>
+        <div class="modal-actions">
+          <button class="btn primary" data-event="detailer.book">Reserver</button>
+          <button class="btn ghost" data-event="detailer.message">Message</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
