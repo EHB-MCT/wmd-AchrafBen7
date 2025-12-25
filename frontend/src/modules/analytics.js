@@ -55,10 +55,6 @@ function scheduleRetry(state) {
 }
 
 async function identifyUser(state) {
-  if (state.userId) {
-    return;
-  }
-
   const payload = await postJson("/api/users/identify", {
     uid: state.userUid,
     device_type: navigator.platform ?? null,
@@ -68,8 +64,17 @@ async function identifyUser(state) {
     country: null,
   });
 
-  state.userId = payload.user_id;
-  localStorage.setItem(USER_ID_KEY, state.userId);
+  if (payload?.user_id) {
+    const previousUserId = state.userId;
+    state.userId = payload.user_id;
+    localStorage.setItem(USER_ID_KEY, state.userId);
+
+    if (previousUserId && previousUserId !== state.userId) {
+      state.sessionId = null;
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(SESSION_START_KEY);
+    }
+  }
 }
 
 async function ensureSession(state) {
@@ -78,13 +83,18 @@ async function ensureSession(state) {
   }
 
   const payload = await postJson("/api/sessions/start", {
-    user_id: state.userId,
+    user_id: state.userId ?? undefined,
+    uid: state.userUid ?? undefined,
     platform: "web",
     network_type: getNetworkType(),
     battery_level: null,
   });
 
   state.sessionId = payload.session?.id;
+  if (!state.userId && payload.session?.user_id) {
+    state.userId = payload.session.user_id;
+    localStorage.setItem(USER_ID_KEY, state.userId);
+  }
   state.sessionStart = Date.now();
   if (state.sessionId) {
     localStorage.setItem(SESSION_KEY, state.sessionId);

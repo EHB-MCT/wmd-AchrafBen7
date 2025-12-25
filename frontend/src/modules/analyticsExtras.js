@@ -4,6 +4,7 @@ const FUNNEL_STORAGE_KEY = "nios_funnel_steps";
 
 export function createAnalyticsExtras(analytics) {
   const sentSteps = loadSentSteps();
+  const getUid = () => localStorage.getItem("nios_user_uid");
 
   const recordSearchQuery = async (query, resultCount) => {
     if (!query) {
@@ -18,6 +19,7 @@ export function createAnalyticsExtras(analytics) {
 
     await postJson("/api/search-queries", {
       user_id: userId,
+      uid: getUid(),
       query,
       result_count: resultCount,
       timestamp: new Date().toISOString(),
@@ -37,6 +39,7 @@ export function createAnalyticsExtras(analytics) {
 
     await postJson("/api/funnels", {
       user_id: userId,
+      uid: getUid(),
       step,
       step_order: order,
       timestamp: new Date().toISOString(),
@@ -59,6 +62,7 @@ export function createAnalyticsExtras(analytics) {
 
     await postJson("/api/provider-views", {
       user_id: userId,
+      uid: getUid(),
       provider_id: providerId,
       view_duration: Math.max(1, Math.round(durationSeconds)),
       timestamp: new Date().toISOString(),
