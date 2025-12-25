@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
@@ -102,6 +102,15 @@ const loadSearchStats = async () => {
 
 onMounted(loadSearchStats);
 watch(selectedRange, loadSearchStats);
+let refreshTimer;
+onMounted(() => {
+    refreshTimer = setInterval(loadSearchStats, 10000);
+});
+onBeforeUnmount(() => {
+    if (refreshTimer) {
+        clearInterval(refreshTimer);
+    }
+});
 
 const distributionLabels = ['Succes', 'Gedeeltelijk', 'Geen resultaat'];
 const distributionDatasets = computed(() => [

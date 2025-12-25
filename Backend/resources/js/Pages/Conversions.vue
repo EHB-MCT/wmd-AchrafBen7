@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { inject, onMounted, ref, watch } from 'vue';
+import { inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import CardStat from '../Components/CardStat.vue';
@@ -67,4 +67,13 @@ const loadConversions = async () => {
 
 onMounted(loadConversions);
 watch(selectedRange, loadConversions);
+let refreshTimer;
+onMounted(() => {
+    refreshTimer = setInterval(loadConversions, 10000);
+});
+onBeforeUnmount(() => {
+    if (refreshTimer) {
+        clearInterval(refreshTimer);
+    }
+});
 </script>

@@ -46,6 +46,12 @@
                 :icon="kpi.icon"
                 :trend="kpi.trend"
             />
+            <CardStat
+                label="Frontend signaal"
+                :value="frontendSignal.count?.toString() ?? '0'"
+                subtitle="Klik op 'Stuur dashboard signaal'"
+                icon="sparkles"
+            />
         </div>
 
         <div class="grid gap-6 lg:grid-cols-3">
@@ -80,6 +86,7 @@ const overview = ref({
     realtime: [],
     comparison: null,
 });
+const frontendSignal = ref({ count: 0, last: null });
 const selectedRange = inject('globalRange', ref('7d'));
 const compareMode = ref(false);
 
@@ -89,16 +96,26 @@ const fetchOverview = async () => {
     });
     overview.value = data;
 };
+const fetchFrontendSignal = async () => {
+    const { data } = await axios.get('/api/frontend-signal');
+    frontendSignal.value = data;
+};
 
 onMounted(fetchOverview);
+onMounted(fetchFrontendSignal);
 watch([selectedRange, compareMode], fetchOverview);
 let refreshTimer;
+let signalTimer;
 onMounted(() => {
     refreshTimer = setInterval(fetchOverview, 10000);
+    signalTimer = setInterval(fetchFrontendSignal, 10000);
 });
 onBeforeUnmount(() => {
     if (refreshTimer) {
         clearInterval(refreshTimer);
+    }
+    if (signalTimer) {
+        clearInterval(signalTimer);
     }
 });
 

@@ -290,9 +290,13 @@ class AnalyticsDashboardService
         [$start, $end] = $this->resolveRange($range);
 
         $users = User::has('sessions')
-            ->select('id', 'name')
-            ->orderBy('name')
-            ->get();
+            ->select('id', 'uid')
+            ->orderBy('uid')
+            ->get()
+            ->map(function ($user) {
+                $user->name = $user->uid ?? $user->id;
+                return $user;
+            });
 
         if (! $userId && $users->isNotEmpty()) {
             $userId = $users->first()->id;
