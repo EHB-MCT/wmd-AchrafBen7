@@ -3,6 +3,9 @@ import "./styles.css";
 
 import { initAnalytics } from "./modules/analytics.js";
 import { createAnalyticsExtras } from "./modules/analyticsExtras.js";
+import { initActivityBadge } from "./modules/activityBadge.js";
+import { initDashboard } from "./modules/dashboard.js";
+import { sendFrontendMetric } from "./modules/frontendMetrics.js";
 import { switchView } from "./modules/view.js";
 import { applyHomeFilter, setActiveHomeFilter } from "./modules/homeFilters.js";
 import { initDetailerModal } from "./modules/detailerModal.js";
@@ -21,6 +24,9 @@ let currentView = "home";
 let lastPointer = null;
 let lastScrollY = 0;
 
+// Debug panel removed for production UI.
+initActivityBadge();
+
 setServicesContext({
   trackEvent: analytics.trackEvent,
   openDetailerModal,
@@ -29,10 +35,12 @@ setServicesContext({
   recordFunnelStep: analyticsExtras.recordFunnelStep,
 });
 
-switchView("home");
-analytics.trackEvent("view", "page.home", { page: "home" });
+const initialView = resolveViewFromPath(window.location.pathname);
+switchView(initialView);
+currentView = initialView;
+analytics.trackEvent("view", `page.${initialView}`, { page: initialView });
 analyticsExtras.recordFunnelStep("Ontdekking", 1);
-currentView = "home";
+initDashboard();
 
 document.addEventListener("mousemove", (event) => {
   lastPointer = { x: event.clientX, y: event.clientY };
@@ -60,6 +68,7 @@ setInterval(() => {
     : null;
 
   analytics.trackEvent("view", "heartbeat", heartbeatPayload, coordsEvent);
+  sendFrontendMetric("heartbeat", "heartbeat", heartbeatPayload);
 }, 10000);
 
 document.addEventListener("click", (event) => {
@@ -94,6 +103,14 @@ document.addEventListener("click", (event) => {
       requestAnimationFrame(() => resizeServicesMap());
       analyticsExtras.recordFunnelStep("Ontdekking", 1);
     }
+  }
+
+  if (eventName) {
+    sendFrontendMetric("click", eventName, metadata);
+  }
+
+  if (target.dataset.path) {
+    window.history.pushState({}, "", target.dataset.path);
   }
 
   if (target.dataset.servicesFilter) {
@@ -144,3 +161,20 @@ document.addEventListener("detailer:closed", (event) => {
   const durationSeconds = event.detail?.durationSeconds;
   analyticsExtras.recordProviderView(detailer?.name, durationSeconds);
 });
+
+window.addEventListener("popstate", () => {
+  const view = resolveViewFromPath(window.location.pathname);
+  switchView(view);
+  currentView = view;
+  analytics.trackEvent("view", `page.${view}`, { page: view });
+});
+
+function resolveViewFromPath(pathname) {
+  if (pathname === "/dashboard") {
+    return "dashboard";
+  }
+  return "home";
+}
+
+
+function initDebugPanel() {}

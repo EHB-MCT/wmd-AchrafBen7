@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\FunnelController;
 use App\Http\Controllers\Api\FrontendSignalController;
+use App\Http\Controllers\Api\FrontendMetricsController;
 use App\Http\Controllers\Api\InsightController;
 use App\Http\Controllers\Api\ProviderViewController;
 use App\Http\Controllers\Api\SearchQueryController;
@@ -27,6 +28,8 @@ Route::post('/funnels', [FunnelController::class, 'store']);
 Route::post('/provider-views', [ProviderViewController::class, 'store']);
 Route::post('/frontend-signal', [FrontendSignalController::class, 'store']);
 Route::get('/frontend-signal', [FrontendSignalController::class, 'show']);
+Route::post('/frontend-metrics/event', [FrontendMetricsController::class, 'store']);
+Route::get('/frontend-metrics', [FrontendMetricsController::class, 'show']);
 
 Route::get('/users/{id}/insights', [InsightController::class, 'userInsights']);
 

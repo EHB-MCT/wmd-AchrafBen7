@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import AppLayout from '../Layouts/AppLayout.vue';
 import DateRangePicker from '../Components/DateRangePicker.vue';
@@ -81,6 +81,15 @@ const loadTimeline = async () => {
 
 onMounted(loadTimeline);
 watch(selectedRange, loadTimeline);
+let refreshTimer;
+onMounted(() => {
+    refreshTimer = setInterval(loadTimeline, 10000);
+});
+onBeforeUnmount(() => {
+    if (refreshTimer) {
+        clearInterval(refreshTimer);
+    }
+});
 
 watch(
     selectedUser,
