@@ -7,9 +7,6 @@
     "build": "vite build",
     "preview": "vite preview --port 5173"
   },
-  "dependencies": {
-    "mapbox-gl": "^2.15.0"
-  },
   "devDependencies": {
     "vite": "^6.0.7"
   }

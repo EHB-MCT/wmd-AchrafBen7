@@ -12,7 +12,7 @@ Deze versie vervangt de iOS-integratie door een webinterface die het bestaande a
    - `npm install`
    - `npm run dev`
 
-> Configureer `frontend/.env` met `VITE_API_BASE` en `VITE_MAPBOX_TOKEN` voor je start.
+> Configureer `frontend/.env` met `VITE_API_BASE` voor je start.
 
 ## 3. Gebruikte endpoints
 
