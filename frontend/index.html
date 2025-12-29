@@ -66,25 +66,29 @@
           </div>
         </header>
 
-        <section class="promo" data-view-section="home" data-display="flex">
+        <section class="promo" data-view-section="home" data-display="flex" data-promo>
           <div class="promo-inner">
-            <p class="promo-title">Nieuwe klant? -€10</p>
-            <p class="promo-sub">Op je eerste reservering</p>
+            <p class="promo-title" data-promo-title>Nieuwe klant? -€10</p>
+            <p class="promo-sub" data-promo-sub>Op je eerste reservering</p>
           </div>
           <button class="promo-close" data-event="promo.close" aria-label="Sluiten">×</button>
         </section>
 
         <section class="hero" data-view-section="home" data-display="block">
           <div class="hero-overlay">
-            <p class="hero-eyebrow">NIOS Marktplaats</p>
-            <h1>Jouw auto verdient het beste</h1>
-            <p>
+            <p class="hero-eyebrow" data-hero-eyebrow>NIOS Marktplaats</p>
+            <h1 data-hero-title>Jouw auto verdient het beste</h1>
+            <p data-hero-sub>
               Premium detailing in de buurt, snel reserveren, veilig betalen en
               geverifieerde dienstverleners.
             </p>
             <div class="hero-actions">
-              <button class="btn primary" data-event="cta.search">Zoek een detailer</button>
-              <button class="btn ghost" data-event="cta.offer">Word dienstverlener</button>
+              <button class="btn primary" data-event="cta.search" data-hero-primary>
+                Zoek een detailer
+              </button>
+              <button class="btn ghost" data-event="cta.offer" data-hero-secondary>
+                Word dienstverlener
+              </button>
             </div>
           </div>
         </section>
