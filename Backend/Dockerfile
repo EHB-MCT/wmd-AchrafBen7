@@ -10,7 +10,9 @@ RUN apk add --no-cache \
     postgresql-dev \
     libzip-dev \
     icu-dev \
-    oniguruma-dev
+    oniguruma-dev \
+    nodejs \
+    npm
 
 
 RUN docker-php-ext-install pdo pdo_pgsql intl zip
@@ -25,6 +27,8 @@ WORKDIR /var/www/html
 COPY . .
 
 RUN composer install --no-interaction --prefer-dist
+
+RUN npm ci && npm run build
 
 RUN if [ -f ".env" ]; then php artisan key:generate; fi
 

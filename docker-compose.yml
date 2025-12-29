@@ -35,6 +35,19 @@ services:
     networks:
       - bta-network
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bta-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE: http://localhost:8100
+    networks:
+      - bta-network
+
   postgres:
     image: postgres:17-alpine
     container_name: bta-postgres
