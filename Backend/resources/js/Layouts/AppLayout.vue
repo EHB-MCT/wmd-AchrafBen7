@@ -68,9 +68,6 @@ const links = [
     { href: '/events', label: 'Evenementen', icon: 'events' },
     { href: '/timeline', label: 'Gebruikerstijdlijn', icon: 'timeline' },
     { href: '/search', label: 'Zoekopdrachten', icon: 'search' },
-    { href: '/conversions', label: 'Conversies', icon: 'conversions' },
-    { href: '/heatmap', label: 'Warmtekaart', icon: 'heatmap' },
-    { href: '/settings', label: 'Instellingen', icon: 'settings' },
 ];
 
 const page = usePage();
