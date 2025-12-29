@@ -295,6 +295,10 @@ body::before {
   animation: rise 0.7s ease both;
 }
 
+.promo.is-urgent {
+  background: linear-gradient(120deg, #ff6b1a, #ffb347 65%, #ffd7b8);
+  box-shadow: 0 16px 44px rgba(255, 122, 50, 0.35);
+}
 .promo-title {
   margin: 0;
   font-weight: 600;
@@ -389,6 +393,24 @@ body::before {
   background: var(--accent-dark);
 }
 
+.btn.primary.is-priority {
+  box-shadow: 0 12px 28px rgba(255, 122, 50, 0.35);
+  position: relative;
+}
+
+.btn.primary.is-priority::after {
+  content: "Prioriteit";
+  position: absolute;
+  top: -10px;
+  right: -14px;
+  background: #111;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 .btn.ghost {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
@@ -462,6 +484,22 @@ body::before {
   animation: rise 0.7s ease both;
 }
 
+.card.is-featured {
+  border: 1px solid rgba(255, 122, 50, 0.6);
+  box-shadow: 0 18px 46px rgba(255, 122, 50, 0.28);
+}
+
+.card-tag {
+  align-self: flex-start;
+  background: rgba(255, 122, 50, 0.16);
+  color: #c0541c;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
 .card:nth-child(1) {
   animation-delay: 0.1s;
 }
