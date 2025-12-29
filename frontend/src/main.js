@@ -190,9 +190,6 @@ window.addEventListener("popstate", () => {
 });
 
 function resolveViewFromPath(pathname) {
-  if (pathname === "/dashboard") {
-    return "dashboard";
-  }
   return "home";
 }
 
