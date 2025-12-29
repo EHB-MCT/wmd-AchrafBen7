@@ -11,4 +11,4 @@
   - https://images.unsplash.com/photo-1486754735734-325b5831c3ad
 
 ## AI Conversations
-- OpenAI Codex CLI (GPT-5): code refactors, analytics tracking expansion, UI personalization, and documentation drafting.
+- OpenAI (GPT-5): code refactors, analytics tracking expansion, UI personalization, and documentation drafting.
