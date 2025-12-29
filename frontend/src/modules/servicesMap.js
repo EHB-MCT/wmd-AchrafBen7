@@ -1,14 +1,13 @@
-import mapboxgl from "mapbox-gl";
-import { MAPBOX_TOKEN } from "../config/env.js";
 import { serviceProviders } from "../data/providers.js";
 
 const state = {
-  map: null,
+  mapEl: null,
   markers: [],
   filter: "offers",
   query: "",
   searchBound: false,
   searchTimer: null,
+  bounds: null,
   context: {
     trackEvent: () => {},
     openDetailerModal: () => {},
@@ -24,36 +23,22 @@ export function setServicesContext(context) {
 
 export function initServicesMap() {
   const container = document.getElementById("services-map");
-  if (!container || state.map) {
+  if (!container || state.mapEl) {
     return;
   }
 
-  if (!MAPBOX_TOKEN) {
-    container.classList.add("map-placeholder");
-    container.textContent = "Mapbox-token ontbreekt.";
-    return;
-  }
-
-  mapboxgl.accessToken = MAPBOX_TOKEN;
-  state.map = new mapboxgl.Map({
-    container,
-    style: "mapbox://styles/mapbox/light-v11",
-    center: [4.3517, 50.8503],
-    zoom: 11,
-  });
-
-  state.map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
-  state.map.on("load", () => {
-    updateServiceMarkers();
-  });
+  state.mapEl = container;
+  container.classList.add("map-static");
+  updateServiceMarkers();
 
   bindServicesSearch();
 }
 
 export function resizeServicesMap() {
-  if (state.map) {
-    state.map.resize();
+  if (!state.mapEl) {
+    return;
   }
+  updateServiceMarkers();
 }
 
 export function setServiceFilter(filter) {
@@ -102,7 +87,7 @@ function bindServicesSearch() {
 }
 
 function updateServiceMarkers() {
-  if (!state.map) {
+  if (!state.mapEl) {
     return;
   }
 
@@ -119,11 +104,18 @@ function updateServiceMarkers() {
     return matchesFilter && matchesQuery;
   });
 
+  const bounds = getMapBounds();
+
   filtered.forEach((provider) => {
     const markerEl = document.createElement("button");
     markerEl.type = "button";
     markerEl.className = "map-marker";
     markerEl.textContent = "•";
+    markerEl.title = `${provider.name} • ${provider.city}`;
+
+    const { x, y } = projectCoords(provider.coords, bounds);
+    markerEl.style.left = `${(x * 100).toFixed(2)}%`;
+    markerEl.style.top = `${(y * 100).toFixed(2)}%`;
 
     markerEl.addEventListener("click", () => {
       state.context.trackEvent("click", "services.marker", { provider: provider.name });
@@ -135,11 +127,8 @@ function updateServiceMarkers() {
       state.context.recordFunnelStep("Intenties", 2);
     });
 
-    const marker = new mapboxgl.Marker(markerEl)
-      .setLngLat(provider.coords)
-      .addTo(state.map);
-
-    state.markers.push(marker);
+    state.mapEl.appendChild(markerEl);
+    state.markers.push(markerEl);
   });
 
   const countEl = document.querySelector("[data-services-count]");
@@ -151,4 +140,27 @@ function updateServiceMarkers() {
 function currentResultCount() {
   const visibleMarkers = state.markers.length;
   return visibleMarkers;
+}
+
+function getMapBounds() {
+  if (state.bounds) {
+    return state.bounds;
+  }
+
+  const longs = serviceProviders.map((provider) => provider.coords[0]);
+  const lats = serviceProviders.map((provider) => provider.coords[1]);
+  const minLon = Math.min(...longs);
+  const maxLon = Math.max(...longs);
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+
+  state.bounds = { minLon, maxLon, minLat, maxLat };
+  return state.bounds;
+}
+
+function projectCoords(coords, bounds) {
+  const [lon, lat] = coords;
+  const x = (lon - bounds.minLon) / Math.max(0.0001, bounds.maxLon - bounds.minLon);
+  const y = 1 - (lat - bounds.minLat) / Math.max(0.0001, bounds.maxLat - bounds.minLat);
+  return { x, y };
 }
