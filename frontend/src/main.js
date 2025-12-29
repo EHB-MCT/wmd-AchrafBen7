@@ -9,6 +9,7 @@ import { sendFrontendMetric } from "./modules/frontendMetrics.js";
 import { switchView } from "./modules/view.js";
 import { applyHomeFilter, setActiveHomeFilter } from "./modules/homeFilters.js";
 import { initDetailerModal } from "./modules/detailerModal.js";
+import { initInteractionTracking } from "./modules/interactionTracking.js";
 import {
   initServicesMap,
   resizeServicesMap,
@@ -41,6 +42,11 @@ currentView = initialView;
 analytics.trackEvent("view", `page.${initialView}`, { page: initialView });
 analyticsExtras.recordFunnelStep("Ontdekking", 1);
 initDashboard();
+initInteractionTracking({
+  analytics,
+  sendFrontendMetric,
+  getView: () => currentView,
+});
 
 document.addEventListener("mousemove", (event) => {
   lastPointer = { x: event.clientX, y: event.clientY };
