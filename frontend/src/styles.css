@@ -72,6 +72,18 @@ body::before {
   justify-content: center;
 }
 
+.app.is-collapsed .sidebar-head {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .brand {
   display: flex;
   gap: 14px;
@@ -100,6 +112,23 @@ body::before {
   margin: 2px 0 0;
   font-size: 13px;
   color: var(--muted);
+}
+
+.menu-toggle {
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.menu-toggle span {
+  transition: transform 0.2s ease;
+}
+
+.app:not(.is-collapsed) .menu-toggle span:first-child {
+  transform: translateY(3px) rotate(45deg);
+}
+
+.app:not(.is-collapsed) .menu-toggle span:last-child {
+  transform: translateY(-3px) rotate(-45deg);
 }
 
 .nav {

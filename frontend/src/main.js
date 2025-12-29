@@ -87,7 +87,12 @@ document.addEventListener("click", (event) => {
   }
 
   if (eventName === "top.menu") {
-    document.querySelector(".app")?.classList.toggle("is-collapsed");
+    const app = document.querySelector(".app");
+    const isCollapsed = app?.classList.toggle("is-collapsed");
+    if (isCollapsed !== undefined) {
+      target.setAttribute("aria-expanded", String(!isCollapsed));
+      target.setAttribute("aria-label", isCollapsed ? "Menu openen" : "Menu inklappen");
+    }
     requestAnimationFrame(() => resizeServicesMap());
   }
 
@@ -102,6 +107,14 @@ document.addEventListener("click", (event) => {
       initServicesMap();
       requestAnimationFrame(() => resizeServicesMap());
       analyticsExtras.recordFunnelStep("Ontdekking", 1);
+    }
+
+    if (window.innerWidth <= 900) {
+      const app = document.querySelector(".app");
+      const menuButton = document.querySelector("[data-event=\"top.menu\"]");
+      app?.classList.add("is-collapsed");
+      menuButton?.setAttribute("aria-expanded", "false");
+      menuButton?.setAttribute("aria-label", "Menu openen");
     }
   }
 
