@@ -1,31 +1,67 @@
-# NIOS Analytics WMD
+# 🚗 NIOS Analytics WMD
 
-## Wat is dit?
-Een lokale WMD-analytics stack met:
-- Een user-facing frontend die gedrag verzamelt en subtiel beïnvloedt.
-- Een backend (Laravel) die data valideert, opslaat en analyseert.
-- Een admin dashboard om data te bekijken en trends te volgen.
+Weapon of Math Destruction-project dat elke interactie logt, gebruikers profielt en het admin‑dashboard realtime voedt. De analyses over bias, tekortkomingen en AI‑hulp staan in `REPORT.md` en `SOURCES.md`.
 
-## Snel starten (vereist Docker)
-1) Maak een `.env` op basis van de template:
+---
+
+## 1. Doel
+NIOS Analytics verzamelt zoveel mogelijk gebruikersinteracties om een gedragsprofiel op te bouwen. Dat profiel beïnvloedt de copy, promoties en CTA’s in de user‑frontend en ondersteunt admin‑beslissingen.
+
+## 2. Opstarten
+1) **Environment klaarzetten**
 ```
 cp .env.template .env
 ```
 
-2) Build en start alles:
+2) **Docker starten**
 ```
 docker compose up --build
 ```
 
-3) Run migrations + seed data:
+3) **Migrations + seed data**
 ```
 docker compose exec app php artisan migrate --seed
 ```
 
-## URLs
+## 3. URLs
 - User frontend: `http://localhost:5173`
 - Admin dashboard: `http://localhost:8100/dashboard`
 
-## Belangrijk
+## 4. Structuur
+```
+wmd-AchrafBen7/
+├── docker-compose.yml
+├── Backend/ (Laravel)
+│   ├── app/                 # controllers, services, models
+│   ├── database/            # migrations + seeders
+│   └── routes/              # api + web routes
+└── frontend/ (Vite)
+    ├── src/modules          # tracking + influence
+    ├── src/data             # providers data
+    └── src/styles.css
+```
+
+## 5. Belangrijkste flows
+| Flow | Beschrijving |
+| --- | --- |
+| **Tracking** | Hovers, clicks, scroll depth, input‑timing, file metadata en heartbeats worden gelogd. |
+| **Profiel & nudging** | Profielsignalen beïnvloeden promo’s, CTA’s en featured cards. |
+| **Admin dashboard** | Overzicht, sessies, events en tijdlijn met filters en realtime updates. |
+
+## 6. Docker services
+| Service | Beschrijving |
+| --- | --- |
+| `app` | Laravel backend + build van admin assets |
+| `nginx` | Reverse proxy op poort 8100 |
+| `postgres` | Persistente database |
+| `redis` | Cache/queue |
+| `frontend` | Vite dev server op poort 5173 |
+
+Stoppen:
+```
+docker compose down
+```
+
+## 7. Notes
 - Alles draait lokaal via Docker.
-- Er zijn geen externe API keys nodig.
+- Geen externe API‑keys nodig.
