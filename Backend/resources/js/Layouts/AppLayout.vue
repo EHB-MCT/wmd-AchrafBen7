@@ -67,7 +67,6 @@ const links = [
     { href: '/sessions', label: 'Sessies', icon: 'sessions' },
     { href: '/events', label: 'Evenementen', icon: 'events' },
     { href: '/timeline', label: 'Gebruikerstijdlijn', icon: 'timeline' },
-    { href: '/search', label: 'Zoekopdrachten', icon: 'search' },
 ];
 
 const page = usePage();

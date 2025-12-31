@@ -71,6 +71,25 @@
                 </div>
             </div>
             <RealTimeFeed :items="overview.realtime" />
+            <div class="rounded-[32px] border border-[#e4e9f3] bg-white/95 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
+                <div class="flex items-center justify-between">
+                    <p class="text-lg font-semibold text-slate-900">Reservaties per detailer</p>
+                    <p class="text-xs uppercase text-slate-400">{{ bookingList.length }} aanbieders</p>
+                </div>
+                <div class="mt-4 space-y-3">
+                    <div
+                        v-for="row in bookingList"
+                        :key="row.provider_id"
+                        class="flex items-center justify-between rounded-2xl bg-slate-50/70 px-4 py-3 text-sm"
+                    >
+                        <span class="font-semibold text-slate-900">{{ row.provider_id }}</span>
+                        <span class="text-slate-500">{{ row.total_bookings }}</span>
+                    </div>
+                    <p v-if="bookingList.length === 0" class="text-sm text-slate-400">
+                        Nog geen reserveringen.
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -94,6 +113,7 @@ const overview = ref({
 });
 const frontendSignal = ref({ count: 0, last: null });
 const topProvider = ref({ name: '-', bookings: 0 });
+const bookingList = ref([]);
 const selectedRange = inject('globalRange', ref('7d'));
 const compareMode = ref(false);
 
@@ -114,10 +134,15 @@ const fetchTopProvider = async () => {
         bookings: Number(data?.total_bookings ?? 0),
     };
 };
+const fetchBookings = async () => {
+    const { data } = await axios.get('/api/bookings');
+    bookingList.value = Array.isArray(data) ? data : [];
+};
 
 onMounted(fetchOverview);
 onMounted(fetchFrontendSignal);
 onMounted(fetchTopProvider);
+onMounted(fetchBookings);
 watch([selectedRange, compareMode], fetchOverview);
 let refreshTimer;
 let signalTimer;
@@ -125,6 +150,7 @@ onMounted(() => {
     refreshTimer = setInterval(() => {
         fetchOverview();
         fetchTopProvider();
+        fetchBookings();
     }, 10000);
     signalTimer = setInterval(fetchFrontendSignal, 10000);
 });
