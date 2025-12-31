@@ -1,106 +1,70 @@
 
-# NÏOS Analytics Engine – Development Standards
+# NIOS Analytics WMD - Development Standards
 
+NIOS Analytics is a behavioral analytics platform that collects real-time user interaction data from a web frontend, builds user profiles, and influences UI decisions based on those profiles.
 
-NÏOS Analytics Engine is a behavioral analytics platform designed to collect real-time user interaction data from the companion iOS application.
-The system identifies patterns, builds individual profiles, and generates insights to influence UI decisions and optimize user engagement
+## 1. Project Stack
+- Frontend (user): Vite + vanilla JavaScript (ES modules)
+- Admin: Vue 3 + Inertia (Laravel)
+- Backend: Laravel (PHP 8.3)
+- Database: PostgreSQL
+- Cache: Redis
+- API: REST JSON
+- Docker: docker compose for local stack
 
-## 1️⃣ Project Stack
-- **Frontend:** Vue.js 3 (Composition API)
-- **Backend:** PHP 8+ (Laravel)
-- **Database:** PostgreSQL 15+
-- **API Communication:** RESTful JSON
-- **Version Control:** Git
+## 2. Code Style and Structure
 
----
+### Backend (Laravel, PHP)
+- PSR-12 coding standard.
+- Indentation: 4 spaces.
+- Naming: camelCase for methods/vars, PascalCase for classes, snake_case for DB columns.
+- Validation happens in controllers before persistence.
+- Services and repositories contain business logic.
 
-## 2️⃣ Code Style & Structure
+Structure (actual):
+```
+Backend/
+├── app/                 # Controllers, Services, DTOs, Models
+├── database/            # Migrations, seeders
+├── routes/              # api.php + web.php
+├── resources/           # Inertia Vue admin pages
+└── public/              # entry point + built assets
+```
 
-### 🔹 Backend (PHP)
-- PSR-12 coding standard (https://www.php-fig.org/psr/psr-12/)
-- **Indentation:** 4 spaces
-- **Naming convention:** camelCase for variables/functions, PascalCase for classes
+### Frontend (Vite, JS)
+- ES modules, no framework for the user frontend.
+- UI hooks use data-attributes (e.g. data-event, data-view-section).
+- Shared styles in `frontend/src/styles.css`.
 
-/backend
-├── /public → entry point (index.php)
-├── /app → controllers, services, models
-├── /routes → API routes
-├── /config → DB connection, environment variables
-├── /tests → unit & integration tests
-└── composer.json
+Structure (actual):
+```
+frontend/
+├── index.html
+├── src/
+│   ├── modules/         # tracking, analytics, influence
+│   ├── data/            # providers data
+│   ├── config/          # env config
+│   └── styles.css
+```
 
-- **Security:**
-- Always use prepared statements for DB queries
-- Input validation before saving data
+## 3. Data and API Conventions
+- UUID primary keys for users, sessions, events, insights.
+- snake_case for DB columns.
+- API timestamps are ISO 8601 strings.
+- Payload validation uses Laravel validators before writes.
+- Metadata fields are bounded and sanitized in controllers.
 
-### 🔹 Frontend (Vue.js)
-- Vue 3 + Vite setup
-- **Naming conventions:**
-- Components in PascalCase (e.g., `LineStatusCard.vue`)
-- Props in camelCase
-- **Folders:**
+## 4. Git Workflow
+- `main` is the stable branch.
+- Work is done on `feature/*` branches and merged into `main`.
+- Merge commits preserved for feature grouping.
 
-/frontend
-├── /src
-│ ├── /components → reusable UI components
-│ ├── /views → dashboard pages
-│ ├── /store → Pinia (state management)
-│ ├── /services → API calls
-│ ├── /assets → images, icons, styles
-│ └── App.vue
-└── vite.config.js
+## 5. Security and Hygiene
+- `.env` files are not committed.
+- Inputs are validated server-side.
+- Only required metadata is stored; no external API keys needed.
 
-## 3️⃣ Database Standards (PostgreSQL)
-- **Naming:** all lowercase, use underscores (e.g., `user_reports`, `alert_logs`)
-- **Primary keys:** always `id SERIAL PRIMARY KEY`
-- **Timestamps:** use `created_at` and `updated_at` (default `NOW()`)
-- **Foreign keys:** always with `ON DELETE CASCADE`
-- **Indexing:** add indexes on foreign keys and high-query columns
-- **Sample structure:**
-```sql
-CREATE TABLE alerts (
-    id SERIAL PRIMARY KEY,
-    line_id INT NOT NULL,
-    type VARCHAR(50),
-    description TEXT,
-    status VARCHAR(20) DEFAULT 'unconfirmed',
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
-4) Git Workflow
-
-Branches:
-
-main → production-ready
-
-dev → active development
-
-feature/ → new feature (e.g. feature/dashboard-ui)
-
-JSON format:
-
-{
-  "id": 42,
-  "type": "delay",
-  "status": "confirmed",
-  "created_at": "2025-10-13T09:23:00Z"
-}
-
-5) Security & Privacy
-
-HTTPS enforced for all requests
-
-.env file used for secrets (DB credentials, API keys)
-
-No user data stored without consent
-
-Validation on all inputs (client & server side)
-
-Protection against:
-
-- SQL Injection 
-
-- XSS 
-
-- CSRF 
+## 6. Documentation
+- `README.md` for setup and usage.
+- `REPORT.md` for findings and shortcomings.
+- `SOURCES.md` for sources and AI conversations.
