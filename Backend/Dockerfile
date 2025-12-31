@@ -17,6 +17,8 @@ RUN apk add --no-cache \
 
 RUN docker-php-ext-install pdo pdo_pgsql intl zip
 
+RUN sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /usr/local/etc/php-fpm.d/www.conf
+
 
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
