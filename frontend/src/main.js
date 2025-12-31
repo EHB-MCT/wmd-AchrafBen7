@@ -159,6 +159,17 @@ document.addEventListener("click", (event) => {
   }
 
   if (eventName?.startsWith("book") || eventName?.includes(".book")) {
+    const button = target.closest("button");
+    if (button) {
+      const originalLabel = button.textContent;
+      button.textContent = "Gereserveerd";
+      button.disabled = true;
+      setTimeout(() => {
+        button.textContent = originalLabel || "Reserveren";
+        button.disabled = false;
+      }, 2000);
+    }
+
     analyticsExtras.recordFunnelStep("Boekingen", 4);
     analytics.trackEvent("conversion", eventName, metadata, event);
   } else {

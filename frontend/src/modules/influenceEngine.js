@@ -2,7 +2,7 @@ import { API_BASE } from "../config/env.js";
 
 export async function applyUserInfluence(analytics) {
   await analytics.ready;
-  const topProvider = await fetchTopProvider();
+  const topProvider = await fetchTopBookingProvider();
   if (topProvider?.provider_id) {
     addTopProviderBadge(topProvider.provider_id);
   }
@@ -19,7 +19,6 @@ export async function applyUserInfluence(analytics) {
     }
 
     applyInfluence(insight);
-    updateWhyBlock(insight, topProvider);
   } catch {
     // Ignore influence failures to keep UX stable.
   }
@@ -35,9 +34,9 @@ async function fetchInsight(userId) {
   return Array.isArray(insights) ? insights[0] : null;
 }
 
-async function fetchTopProvider() {
+async function fetchTopBookingProvider() {
   try {
-    const response = await fetch(`${API_BASE}/api/provider-views/top`);
+    const response = await fetch(`${API_BASE}/api/bookings/top`);
     if (!response.ok) {
       return null;
     }
@@ -90,53 +89,6 @@ function applyInfluence(insight) {
 
   if (premium > 0.6) {
     highlightProvider("Shine Masters", "Premium keuze");
-  }
-}
-
-function updateWhyBlock(insight, topProvider) {
-  const block = document.querySelector("[data-why-block]");
-  const list = document.querySelector("[data-why-list]");
-  const title = document.querySelector("[data-why-title]");
-  if (!block || !list) {
-    return;
-  }
-
-  const reasons = [];
-  const premium = toNumber(insight.premium_tendency);
-  const hesitation = toNumber(insight.hesitation_score);
-  const impulsive = toNumber(insight.impulsivity_score);
-
-  if (premium > 0.6) {
-    reasons.push("Je kiest vaker premium diensten.");
-  }
-  if (hesitation > 0.6) {
-    reasons.push("Je vergelijkt langer voordat je beslist.");
-  }
-  if (impulsive > 0.6) {
-    reasons.push("Je klikt snel door naar reserveren.");
-  }
-  if (insight.night_user) {
-    reasons.push("Je bekijkt vooral in de avond.");
-  }
-  if (insight.likely_to_book) {
-    reasons.push("Je boekt vaker dan gemiddeld.");
-  }
-  if (insight.risk_churn) {
-    reasons.push("Je haakt soms af zonder te boeken.");
-  }
-
-  if (topProvider?.provider_id) {
-    reasons.push(`Deze detailer is het vaakst gekozen: ${topProvider.provider_id}.`);
-  }
-
-  if (!reasons.length) {
-    return;
-  }
-
-  block.classList.remove("is-hidden");
-  list.innerHTML = reasons.map((reason) => `<li>${reason}</li>`).join("");
-  if (topProvider?.provider_id && title) {
-    title.textContent = `Waarom ${topProvider.provider_id}?`;
   }
 }
 

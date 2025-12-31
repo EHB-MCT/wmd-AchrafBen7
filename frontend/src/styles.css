@@ -586,40 +586,6 @@ body::before {
   color: var(--muted);
 }
 
-.recommendation {
-  margin-top: 24px;
-}
-
-.recommendation-card {
-  background: #fff;
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  box-shadow: var(--shadow);
-  display: grid;
-  gap: 14px;
-}
-
-.recommendation-head h3 {
-  margin: 6px 0 0;
-  font-size: 20px;
-}
-
-.recommendation-eyebrow {
-  margin: 0;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.recommendation-list {
-  margin: 0;
-  padding: 0 0 0 18px;
-  display: grid;
-  gap: 6px;
-  color: var(--text);
-  font-size: 14px;
-}
 
 .btn.small {
   padding: 8px 14px;
