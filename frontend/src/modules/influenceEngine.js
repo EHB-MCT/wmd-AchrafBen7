@@ -2,26 +2,48 @@ import { API_BASE } from "../config/env.js";
 
 export async function applyUserInfluence(analytics) {
   await analytics.ready;
-  const userId = analytics.getUserId();
-  if (!userId) {
-    return;
+  const topProvider = await fetchTopProvider();
+  if (topProvider?.provider_id) {
+    addTopProviderBadge(topProvider.provider_id);
   }
 
   try {
-    const response = await fetch(`${API_BASE}/api/users/${userId}/insights`);
-    if (!response.ok) {
+    const userId = analytics.getUserId();
+    if (!userId) {
       return;
     }
 
-    const insights = await response.json();
-    const insight = Array.isArray(insights) ? insights[0] : null;
+    const insight = await fetchInsight(userId);
     if (!insight) {
       return;
     }
 
     applyInfluence(insight);
+    updateWhyBlock(insight, topProvider);
   } catch {
     // Ignore influence failures to keep UX stable.
+  }
+}
+
+async function fetchInsight(userId) {
+  const response = await fetch(`${API_BASE}/api/users/${userId}/insights`);
+  if (!response.ok) {
+    return null;
+  }
+
+  const insights = await response.json();
+  return Array.isArray(insights) ? insights[0] : null;
+}
+
+async function fetchTopProvider() {
+  try {
+    const response = await fetch(`${API_BASE}/api/provider-views/top`);
+    if (!response.ok) {
+      return null;
+    }
+    return response.json();
+  } catch {
+    return null;
   }
 }
 
@@ -71,6 +93,53 @@ function applyInfluence(insight) {
   }
 }
 
+function updateWhyBlock(insight, topProvider) {
+  const block = document.querySelector("[data-why-block]");
+  const list = document.querySelector("[data-why-list]");
+  const title = document.querySelector("[data-why-title]");
+  if (!block || !list) {
+    return;
+  }
+
+  const reasons = [];
+  const premium = toNumber(insight.premium_tendency);
+  const hesitation = toNumber(insight.hesitation_score);
+  const impulsive = toNumber(insight.impulsivity_score);
+
+  if (premium > 0.6) {
+    reasons.push("Je kiest vaker premium diensten.");
+  }
+  if (hesitation > 0.6) {
+    reasons.push("Je vergelijkt langer voordat je beslist.");
+  }
+  if (impulsive > 0.6) {
+    reasons.push("Je klikt snel door naar reserveren.");
+  }
+  if (insight.night_user) {
+    reasons.push("Je bekijkt vooral in de avond.");
+  }
+  if (insight.likely_to_book) {
+    reasons.push("Je boekt vaker dan gemiddeld.");
+  }
+  if (insight.risk_churn) {
+    reasons.push("Je haakt soms af zonder te boeken.");
+  }
+
+  if (topProvider?.provider_id) {
+    reasons.push(`Deze detailer is het vaakst gekozen: ${topProvider.provider_id}.`);
+  }
+
+  if (!reasons.length) {
+    return;
+  }
+
+  block.classList.remove("is-hidden");
+  list.innerHTML = reasons.map((reason) => `<li>${reason}</li>`).join("");
+  if (topProvider?.provider_id && title) {
+    title.textContent = `Waarom ${topProvider.provider_id}?`;
+  }
+}
+
 function highlightProvider(name, tagLabel) {
   const card = document.querySelector(`[data-provider="${name}"]`);
   if (!card) {
@@ -87,6 +156,23 @@ function highlightProvider(name, tagLabel) {
   tag.className = "card-tag";
   tag.textContent = tagLabel;
   body.prepend(tag);
+}
+
+function addTopProviderBadge(name) {
+  const card = document.querySelector(`[data-provider="${name}"]`);
+  if (!card) {
+    return;
+  }
+
+  const body = card.querySelector(".card-body");
+  if (!body || body.querySelector(".card-badge")) {
+    return;
+  }
+
+  const badge = document.createElement("span");
+  badge.className = "card-badge";
+  badge.textContent = "Meest gekozen";
+  body.prepend(badge);
 }
 
 function setText(el, text) {

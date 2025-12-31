@@ -484,6 +484,18 @@ body::before {
   animation: rise 0.7s ease both;
 }
 
+.card-badge {
+  align-self: flex-start;
+  background: rgba(17, 17, 17, 0.9);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
 .card.is-featured {
   border: 1px solid rgba(255, 122, 50, 0.6);
   box-shadow: 0 18px 46px rgba(255, 122, 50, 0.28);
@@ -572,6 +584,41 @@ body::before {
   justify-content: space-between;
   font-size: 12px;
   color: var(--muted);
+}
+
+.recommendation {
+  margin-top: 24px;
+}
+
+.recommendation-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 14px;
+}
+
+.recommendation-head h3 {
+  margin: 6px 0 0;
+  font-size: 20px;
+}
+
+.recommendation-eyebrow {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.recommendation-list {
+  margin: 0;
+  padding: 0 0 0 18px;
+  display: grid;
+  gap: 6px;
+  color: var(--text);
+  font-size: 14px;
 }
 
 .btn.small {
