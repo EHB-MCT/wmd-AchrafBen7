@@ -53,9 +53,9 @@
                 icon="sparkles"
             />
             <CardStat
-                label="Meest gekozen detailer"
+                label="Meest geboekte detailer"
                 :value="topProvider.name"
-                :subtitle="`Views: ${topProvider.views}`"
+                :subtitle="`Boekingen: ${topProvider.bookings}`"
                 icon="trending-up"
             />
         </div>
@@ -93,7 +93,7 @@ const overview = ref({
     comparison: null,
 });
 const frontendSignal = ref({ count: 0, last: null });
-const topProvider = ref({ name: '-', views: 0 });
+const topProvider = ref({ name: '-', bookings: 0 });
 const selectedRange = inject('globalRange', ref('7d'));
 const compareMode = ref(false);
 
@@ -108,10 +108,10 @@ const fetchFrontendSignal = async () => {
     frontendSignal.value = data;
 };
 const fetchTopProvider = async () => {
-    const { data } = await axios.get('/api/provider-views/top');
+    const { data } = await axios.get('/api/bookings/top');
     topProvider.value = {
         name: data?.provider_id || '-',
-        views: Number(data?.total_views ?? 0),
+        bookings: Number(data?.total_bookings ?? 0),
     };
 };
 

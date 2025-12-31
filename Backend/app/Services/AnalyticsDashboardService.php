@@ -77,13 +77,6 @@ class AnalyticsDashboardService
                 'icon' => 'sparkles',
             ],
             [
-                'label' => 'Conversieratio',
-                'value' => number_format($conversionRate, 1) . '%',
-                'subtitle' => 'Boekingen / Sessies',
-                'trend' => $this->trend($conversionRate, $previousConversionRate),
-                'icon' => 'trending-up',
-            ],
-            [
                 'label' => 'Gemiddelde duur',
                 'value' => $this->formatDuration($avgDuration),
                 'subtitle' => 'Per sessie',

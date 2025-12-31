@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\FunnelController;
 use App\Http\Controllers\Api\FrontendSignalController;
 use App\Http\Controllers\Api\FrontendMetricsController;
 use App\Http\Controllers\Api\InsightController;
+use App\Http\Controllers\Api\BookingStatsController;
 use App\Http\Controllers\Api\ProviderViewController;
 use App\Http\Controllers\Api\SearchQueryController;
 use App\Http\Controllers\Api\SessionController;
@@ -33,6 +34,6 @@ Route::get('/frontend-metrics', [FrontendMetricsController::class, 'show']);
 
 Route::get('/users/{id}/insights', [InsightController::class, 'userInsights']);
 
-Route::get('/provider-views/top', [ProviderViewController::class, 'top']);
+Route::get('/bookings/top', [BookingStatsController::class, 'top']);
 Route::get('/funnels', [FunnelController::class, 'index']);
 Route::get('/provider-views', [ProviderViewController::class, 'index']);
