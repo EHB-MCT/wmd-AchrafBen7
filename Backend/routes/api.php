@@ -33,5 +33,6 @@ Route::get('/frontend-metrics', [FrontendMetricsController::class, 'show']);
 
 Route::get('/users/{id}/insights', [InsightController::class, 'userInsights']);
 
+Route::get('/provider-views/top', [ProviderViewController::class, 'top']);
 Route::get('/funnels', [FunnelController::class, 'index']);
 Route::get('/provider-views', [ProviderViewController::class, 'index']);

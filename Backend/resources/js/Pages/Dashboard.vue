@@ -52,6 +52,12 @@
                 subtitle="Klik op 'Stuur dashboard signaal'"
                 icon="sparkles"
             />
+            <CardStat
+                label="Meest gekozen detailer"
+                :value="topProvider.name"
+                :subtitle="`Views: ${topProvider.views}`"
+                icon="trending-up"
+            />
         </div>
 
         <div class="grid gap-6 lg:grid-cols-3">
@@ -87,6 +93,7 @@ const overview = ref({
     comparison: null,
 });
 const frontendSignal = ref({ count: 0, last: null });
+const topProvider = ref({ name: '-', views: 0 });
 const selectedRange = inject('globalRange', ref('7d'));
 const compareMode = ref(false);
 
@@ -100,14 +107,25 @@ const fetchFrontendSignal = async () => {
     const { data } = await axios.get('/api/frontend-signal');
     frontendSignal.value = data;
 };
+const fetchTopProvider = async () => {
+    const { data } = await axios.get('/api/provider-views/top');
+    topProvider.value = {
+        name: data?.provider_id || '-',
+        views: Number(data?.total_views ?? 0),
+    };
+};
 
 onMounted(fetchOverview);
 onMounted(fetchFrontendSignal);
+onMounted(fetchTopProvider);
 watch([selectedRange, compareMode], fetchOverview);
 let refreshTimer;
 let signalTimer;
 onMounted(() => {
-    refreshTimer = setInterval(fetchOverview, 10000);
+    refreshTimer = setInterval(() => {
+        fetchOverview();
+        fetchTopProvider();
+    }, 10000);
     signalTimer = setInterval(fetchFrontendSignal, 10000);
 });
 onBeforeUnmount(() => {

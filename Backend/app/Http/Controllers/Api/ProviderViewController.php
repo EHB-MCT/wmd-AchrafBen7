@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProviderView;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProviderViewController extends Controller
 {
@@ -73,5 +74,19 @@ class ProviderViewController extends Controller
     public function index()
     {
         return ProviderView::orderBy('view_count', 'desc')->get();
+    }
+
+    public function top()
+    {
+        $top = ProviderView::select('provider_id', DB::raw('SUM(view_count) as total_views'))
+            ->whereNotNull('provider_id')
+            ->groupBy('provider_id')
+            ->orderByDesc('total_views')
+            ->first();
+
+        return response()->json([
+            'provider_id' => $top?->provider_id,
+            'total_views' => (int) ($top->total_views ?? 0),
+        ]);
     }
 }
