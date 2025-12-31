@@ -75,6 +75,13 @@ async function identifyUser(state) {
       localStorage.removeItem(SESSION_START_KEY);
     }
   }
+
+  if (payload?.session_id && !state.sessionId) {
+    state.sessionId = payload.session_id;
+    localStorage.setItem(SESSION_KEY, state.sessionId);
+    state.sessionStart = Date.now();
+    localStorage.setItem(SESSION_START_KEY, String(state.sessionStart));
+  }
 }
 
 async function ensureSession(state) {
@@ -104,6 +111,10 @@ async function ensureSession(state) {
 
 async function trackEvent(state, type, name, value = {}, event) {
   await state.ready;
+  if (!state.sessionId || state.sessionId === "null" || state.sessionId === "undefined") {
+    state.sessionId = null;
+    await ensureSession(state);
+  }
   if (!state.sessionId) {
     return;
   }

@@ -89,6 +89,10 @@ document.addEventListener("click", (event) => {
     label: target.textContent?.trim() || undefined,
   };
 
+  if (target.dataset.provider) {
+    metadata.provider = target.dataset.provider;
+  }
+
   if (eventName === "promo.close") {
     document.querySelector(".promo")?.classList.add("is-hidden");
   }
@@ -158,7 +162,11 @@ document.addEventListener("click", (event) => {
     analyticsExtras.recordFunnelStep("Offertes", 3);
   }
 
-  if (eventName?.startsWith("book") || eventName?.includes(".book")) {
+  const isBookingEvent = eventName?.startsWith("book") || eventName?.includes(".book");
+  const trackedEventName =
+    isBookingEvent && metadata.provider ? `book.${metadata.provider}` : eventName;
+
+  if (isBookingEvent) {
     const button = target.closest("button");
     if (button) {
       const originalLabel = button.textContent;
@@ -171,9 +179,9 @@ document.addEventListener("click", (event) => {
     }
 
     analyticsExtras.recordFunnelStep("Boekingen", 4);
-    analytics.trackEvent("conversion", eventName, metadata, event);
+    analytics.trackEvent("conversion", trackedEventName, metadata, event);
   } else {
-    analytics.trackEvent("click", eventName, metadata, event);
+    analytics.trackEvent("click", trackedEventName, metadata, event);
   }
 });
 

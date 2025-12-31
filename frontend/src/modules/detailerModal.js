@@ -35,6 +35,7 @@ function openDetailerModal(modal, detailer) {
   const nameEl = document.getElementById("detailer-name");
   const serviceEl = document.getElementById("detailer-service");
   const ratingEl = document.getElementById("detailer-rating");
+  const bookButton = modal.querySelector("[data-event=\"detailer.book\"]");
 
   if (nameEl) {
     nameEl.textContent = detailer.name || "Dienstverlener";
@@ -46,6 +47,10 @@ function openDetailerModal(modal, detailer) {
 
   if (ratingEl) {
     ratingEl.textContent = `★ ${detailer.rating ?? "-"}`;
+  }
+
+  if (bookButton) {
+    bookButton.dataset.provider = detailer.name || "";
   }
 
   modal.classList.add("is-open");

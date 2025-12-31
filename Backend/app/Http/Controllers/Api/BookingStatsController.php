@@ -13,7 +13,7 @@ class BookingStatsController extends Controller
             ->selectRaw("value->>'provider' as provider_id, COUNT(*) as total_bookings")
             ->where('type', 'conversion')
             ->where('name', 'like', 'book.%')
-            ->whereRaw("value ? 'provider'")
+            ->whereRaw("jsonb_exists(value, 'provider')")
             ->groupBy('provider_id')
             ->orderByDesc('total_bookings')
             ->get();
@@ -27,7 +27,7 @@ class BookingStatsController extends Controller
             ->selectRaw("value->>'provider' as provider_id, COUNT(*) as total_bookings")
             ->where('type', 'conversion')
             ->where('name', 'like', 'book.%')
-            ->whereRaw("value ? 'provider'")
+            ->whereRaw("jsonb_exists(value, 'provider')")
             ->groupBy('provider_id')
             ->orderByDesc('total_bookings')
             ->first();

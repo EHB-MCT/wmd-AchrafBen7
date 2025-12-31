@@ -62,6 +62,9 @@ class UserIdentityController extends Controller
             ]);
         }
 
-        return response()->json(['user_id' => $user->id]);
+        return response()->json([
+            'user_id' => $user->id,
+            'session_id' => $recentSession->id,
+        ]);
     }
 }
