@@ -57,8 +57,7 @@ wmd-AchrafBen7/
 ## 7. Docker services
 | Service | Beschrijving |
 | --- | --- |
-| `app` | Laravel backend + build van admin assets |
-| `nginx` | Reverse proxy op poort 8100 |
+| `app` | Laravel backend (artisan serve) op poort 8100 |
 | `postgres` | Persistente database |
 | `redis` | Cache/queue |
 | `frontend` | Vite dev server op poort 5173 |
