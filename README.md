@@ -12,7 +12,6 @@ NIOS Analytics verzamelt zoveel mogelijk gebruikersinteracties om een gedragspro
 ```
 cp .env.template .env
 ```
-
 2) Stack builden en starten:
 ```
 docker compose up --build
