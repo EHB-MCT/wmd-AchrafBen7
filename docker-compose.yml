@@ -1,0 +1,69 @@
+services:
+  app:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: bta-app
+    restart: unless-stopped
+    volumes:
+      - ./Backend:/var/www/html
+    command: php artisan serve --host=0.0.0.0 --port=8100
+    ports:
+      - "8100:8100"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: bta_dashboard
+      DB_USERNAME: postgres
+      DB_PASSWORD: password123
+      REDIS_HOST: redis
+    networks:
+      - bta-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bta-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE: http://localhost:8100
+    networks:
+      - bta-network
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: bta-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: bta_dashboard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bta-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: bta-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - bta-network
+
+volumes:
+  postgres_data:
+
+networks:
+  bta-network:
+    driver: bridge

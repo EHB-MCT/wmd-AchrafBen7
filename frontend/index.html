@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NIOS - Autodetailing Marktplaats</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">N</div>
+          <div>
+            <p class="brand-name">NIOS</p>
+            <p class="brand-sub">Autodetailing netwerk</p>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-link is-active" data-event="nav.home" data-view="home">
+            Start
+          </button>
+          <button class="nav-link" data-event="nav.services" data-view="services">
+            Diensten
+          </button>
+          <button class="nav-link" data-event="nav.activity" data-view="activity">
+            Activiteit
+          </button>
+          <button class="nav-link" data-event="nav.notifications" data-view="notifications">
+            Meldingen
+          </button>
+
+          <p class="nav-section">Dashboards</p>
+        </nav>
+
+        <div class="nav-footer"></div>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <button class="icon-btn" data-event="top.menu" aria-label="Menu openen">
+            <span></span>
+            <span></span>
+          </button>
+          <div class="top-actions">
+            <div class="activity-badge" data-activity-badge>
+              <span class="activity-dot is-idle" data-activity-dot></span>
+              <span class="activity-text">Actieve gebruikers</span>
+              <strong data-activity-count>0</strong>
+            </div>
+            <button class="icon-btn" data-event="top.notifications" aria-label="Meldingen">
+              <span class="dot"></span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 3a5 5 0 0 0-5 5v3.2l-1.6 2.7A1 1 0 0 0 6.3 16h11.4a1 1 0 0 0 .9-1.5L17 11.2V8a5 5 0 0 0-5-5Z"
+                />
+                <path d="M9.5 18a2.5 2.5 0 0 0 5 0" />
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <section class="promo" data-view-section="home" data-display="flex" data-promo>
+          <div class="promo-inner">
+            <p class="promo-title" data-promo-title>Nieuwe klant? -€10</p>
+            <p class="promo-sub" data-promo-sub>Op je eerste reservering</p>
+          </div>
+          <button class="promo-close" data-event="promo.close" aria-label="Sluiten">×</button>
+        </section>
+
+        <section class="hero" data-view-section="home" data-display="block">
+          <div class="hero-overlay">
+            <p class="hero-eyebrow" data-hero-eyebrow>NIOS Marktplaats</p>
+            <h1 data-hero-title>Jouw auto verdient het beste</h1>
+            <p data-hero-sub>
+              Premium detailing in de buurt, snel reserveren, veilig betalen en
+              geverifieerde dienstverleners.
+            </p>
+            <div class="hero-actions">
+              <button class="btn primary" data-event="cta.search" data-hero-primary>
+                Zoek een detailer
+              </button>
+              <button class="btn ghost" data-event="cta.offer" data-hero-secondary>
+                Word dienstverlener
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="filters" data-view-section="home" data-display="flex">
+          <button class="pill is-active" data-event="filter.all" data-filter="all">Alles</button>
+          <button class="pill" data-event="filter.polish" data-filter="polish">
+            Polijsten
+          </button>
+          <button class="pill" data-event="filter.ceramic" data-filter="ceramic">
+            Keramiek
+          </button>
+          <button class="pill" data-event="filter.interior" data-filter="interior">
+            Interieur
+          </button>
+          <button class="pill" data-event="filter.wash" data-filter="wash">Wassen</button>
+          <button class="pill icon" data-event="filter.more" data-filter="more">
+            <span class="filter-icon">≡</span>
+            Filters
+          </button>
+        </section>
+
+        <section class="section-header" data-view-section="home" data-display="flex">
+          <h2>In de buurt</h2>
+          <button class="ghost-link" data-event="section.more">Alles bekijken →</button>
+        </section>
+
+        <section class="cards" data-view-section="home" data-display="grid">
+          <article
+            class="card"
+            data-provider="DetailPro Brussels"
+            data-category="polish"
+            data-rating="4.8"
+          >
+            <div class="card-media"></div>
+            <div class="card-body">
+              <span class="rating">★ 4.8</span>
+              <h3>DetailPro Brussels</h3>
+              <p>Volledig polijsten</p>
+              <div class="card-footer">
+                <span>Binnen 24u beschikbaar</span>
+                <button class="btn small" data-event="book.detailpro">Reserveren</button>
+              </div>
+            </div>
+          </article>
+
+          <article
+            class="card"
+            data-provider="Shine Masters"
+            data-category="ceramic"
+            data-rating="4.9"
+          >
+            <div class="card-media alt-1"></div>
+            <div class="card-body">
+              <span class="rating">★ 4.9</span>
+              <h3>Shine Masters</h3>
+              <p>Keramische bescherming</p>
+              <div class="card-footer">
+                <span>Morgen beschikbaar</span>
+                <button class="btn small" data-event="book.shine">Reserveren</button>
+              </div>
+            </div>
+          </article>
+
+          <article
+            class="card"
+            data-provider="Auto Perfection"
+            data-category="interior"
+            data-rating="4.7"
+          >
+            <div class="card-media alt-2"></div>
+            <div class="card-body">
+              <span class="rating">★ 4.7</span>
+              <h3>Auto Perfection</h3>
+              <p>Interieurreiniging</p>
+              <div class="card-footer">
+                <span>Afstand 2,1 km</span>
+                <button class="btn small" data-event="book.auto">Reserveren</button>
+              </div>
+            </div>
+          </article>
+
+          <article
+            class="card"
+            data-provider="Wash Pro"
+            data-category="wash"
+            data-rating="4.6"
+          >
+            <div class="card-media alt-3"></div>
+            <div class="card-body">
+              <span class="rating">★ 4.6</span>
+              <h3>Wash Pro</h3>
+              <p>Premium wasbeurt</p>
+              <div class="card-footer">
+                <span>Afstand 3,4 km</span>
+                <button class="btn small" data-event="book.washpro">Reserveren</button>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="page services" data-view-section="services" data-display="block">
+          <div class="map-card">
+            <div class="map-search">
+              <div class="search-field">
+                <span class="search-icon">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Dienst, stad..."
+                  aria-label="Zoek diensten"
+                  data-services-search
+                />
+              </div>
+              <button class="icon-btn" data-event="services.filter">
+                <span></span>
+                <span></span>
+              </button>
+            </div>
+
+            <div class="map-filters">
+              <button class="chip is-active" data-services-filter="offers" data-event="filter.offers">
+                Aanbiedingen
+              </button>
+              <button class="chip" data-services-filter="price" data-event="filter.price">Prijs</button>
+              <button
+                class="chip"
+                data-services-filter="home"
+                data-event="filter.home"
+              >
+                Aan huis
+              </button>
+              <button
+                class="chip"
+                data-services-filter="top"
+                data-event="filter.top"
+              >
+                Best beoordeeld
+              </button>
+              <button
+                class="chip"
+                data-services-filter="distance"
+                data-event="filter.distance"
+              >
+                Distance
+              </button>
+              <button
+                class="chip"
+                data-services-filter="express"
+                data-event="filter.express"
+              >
+                Snelle service
+              </button>
+            </div>
+
+            <div id="services-map" class="map-surface" aria-label="Services kaart"></div>
+            <div class="map-legend">
+              <span>Actieve detailers</span>
+              <span class="legend-dot"></span>
+              <span class="legend-text" data-services-count>4</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="page activity" data-view-section="activity" data-display="block">
+          <h2>Recente activiteit</h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <span class="time">2 min geleden</span>
+              <p>Je bekeek Shine Masters.</p>
+            </div>
+            <div class="timeline-item">
+              <span class="time">12 min geleden</span>
+              <p>Nieuwe offerte van DetailPro Brussels.</p>
+            </div>
+            <div class="timeline-item">
+              <span class="time">Gisteren</span>
+              <p>Reservering bevestigd voor een premium wasbeurt.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="page notifications" data-view-section="notifications" data-display="block">
+          <h2>Meldingen</h2>
+          <div class="notification-list">
+            <div class="notification">
+              <p>Actie -€10 geldig tot zondag.</p>
+              <button class="ghost-link" data-event="notif.view">Bekijk</button>
+            </div>
+            <div class="notification">
+              <p>Auto Perfection is nu beschikbaar bij jou in de buurt.</p>
+              <button class="ghost-link" data-event="notif.book">Reserveren</button>
+            </div>
+            <div class="notification">
+              <p>Nieuwe dienstverlener toegevoegd in Brussel.</p>
+              <button class="ghost-link" data-event="notif.profile">Profiel</button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <div class="modal" id="detailer-modal" aria-hidden="true">
+      <div class="modal-card">
+        <button class="modal-close" data-event="detailer.close">×</button>
+        <h3 id="detailer-name">Dienstverlener</h3>
+        <p id="detailer-service">Dienst</p>
+        <p id="detailer-rating" class="detailer-rating">★ 4.8</p>
+        <p class="detailer-desc">
+          Eenvoudig reserveren, veilig betalen en directe beschikbaarheid.
+        </p>
+        <div class="modal-actions">
+          <button class="btn primary" data-event="detailer.book">Reserveren</button>
+          <button class="btn ghost" data-event="detailer.message">Bericht</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
